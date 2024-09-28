@@ -1,19 +1,19 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+//using System.Collections;
+//using System.Collections.Generic;
+//using UnityEngine;
 
-public class DeathZonesManager : MonoBehaviour
-{
-    public GameObject Player;
+//public class DeathZonesManager : MonoBehaviour
+//{
+//    public GameObject Player;
 
-    void Start()
-    {
+//    void Start()
+//    {
         
-    }
+//    }
 
-    // Update is called once per frame
-    void Update()
-    {
+//    // Update is called once per frame
+//    void Update()
+//    {
         
-    }
-}
+//    }
+//}
