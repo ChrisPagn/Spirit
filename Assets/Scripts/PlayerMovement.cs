@@ -12,6 +12,11 @@ public class PlayerMovement : MonoBehaviour
     public float moveSpeed;
 
     /// <summary>
+    /// Vitesse de déplacement du joueur.
+    /// </summary>
+    public float climbSpeed;
+
+    /// <summary>
     /// Force de saut du joueur.
     /// </summary>
     public float jumpForce;
@@ -44,6 +49,7 @@ public class PlayerMovement : MonoBehaviour
     /// <summary>
     /// Indicateur si le joueur en train de grimper.
     /// </summary>
+    [HideInInspector]  
     public bool isClimbing = false;
 
     /// <summary>
@@ -98,7 +104,7 @@ public class PlayerMovement : MonoBehaviour
         horizontalMovement = Input.GetAxis("Horizontal") * moveSpeed * Time.fixedDeltaTime;
         
         // Récupère l'input vertical ("Vertical" fait référence aux touches fléchées ou aux sticks analogiques)
-        verticalMovement = Input.GetAxis("Vertical") * moveSpeed * Time.fixedDeltaTime;
+        verticalMovement = Input.GetAxis("Vertical") * climbSpeed * Time.fixedDeltaTime;
         
         // Vérifie si le joueur est en train de sauter (barre espace)
         if (Input.GetButtonDown("Jump") && isGrounded)
@@ -112,6 +118,7 @@ public class PlayerMovement : MonoBehaviour
         // Calcul de la vitesse du personnage (Player) et renvoie tjs une valeur positive (Problème du gauche - droite ou arrière - avant)
         float characterVelocity = Mathf.Abs(velocity.x);
         animator.SetFloat("Speed", characterVelocity);
+        animator.SetBool("isClimbing", isClimbing);
     }
 
     /// <summary>
@@ -120,10 +127,20 @@ public class PlayerMovement : MonoBehaviour
     /// </summary>
     void FixedUpdate()
     {
+        // Vérifier si le joueur est au sol
         isGrounded = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, collinsionLayers);
-        // Appelle la fonction pour déplacer le joueur avec l'input récupéré
-        MovePlayer(horizontalMovement, verticalMovement);
+
+        // Si le joueur est en train de grimper, ne pas autoriser les sauts et mouvements horizontaux classiques
+        if (!isClimbing)
+        {
+            MovePlayer(horizontalMovement, 0); // Pas de mouvement vertical si on ne grimpe pas
+        }
+        else
+        {
+            MovePlayer(0, verticalMovement); // Mouvement vertical uniquement lors de l'escalade
+        }
     }
+
 
     /// <summary>
     /// Applique le mouvement au joueur en lissant la transition vers la vitesse cible.
@@ -147,8 +164,8 @@ public class PlayerMovement : MonoBehaviour
         else
         {
             // Deplacement vertical
-            // Crée un vecteur avec la vitesse vertical et la vitesse verticale actuelle
-            Vector2 targetVelocity = new Vector2(rigidbody2D.velocity.x, _verticalMovement);
+            // Crée un vecteur avec la vitesse vertical et la vitesse verticale actuelle (0 pour que le personnage s'arrete lorsque qu'il attrape l'echelle)
+            Vector2 targetVelocity = new Vector2(0, _verticalMovement);
 
             // Applique un lissage à la vélocité du joueur pour un mouvement plus fluide
             // SmoothDamp lisse la transition entre la vélocité actuelle et la cible
