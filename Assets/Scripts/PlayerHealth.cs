@@ -29,6 +29,8 @@ public class PlayerHealth : MonoBehaviour
     // Référence au SpriteRenderer pour rendre le joueur clignotant lorsqu'il est invincible
     public SpriteRenderer graphics;
 
+    public static PlayerHealth instance;
+
     // Start est appelé au début du jeu
     void Start()
     {
@@ -47,6 +49,27 @@ public class PlayerHealth : MonoBehaviour
         {
             TakeDamage(20); // Réduit la santé de 20 si on appuie sur H
         }
+    }
+
+    private void Awake()
+    {
+        if (instance != null) 
+        {
+            Debug.LogWarning("Il y a plus d'une instance PlayerHealth dans la scène");
+            return;  
+        }
+
+        instance = this;
+    }
+
+    /// <summary>
+    /// Méthode appelée lorsque le joueur reprend de la vie.
+    /// </summary>
+    /// <param name="amount">Quantité de récupération de vie au joueur.</param>
+    public void HealPlayer(int amount)
+    {
+        currentHealth += amount;
+        healthBar.SetHealth(currentHealth);
     }
 
     /// <summary>
