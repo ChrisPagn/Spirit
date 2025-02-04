@@ -7,7 +7,7 @@ public class Ladder : MonoBehaviour
 {
     private bool isInRange;
 
-    public TextMeshProUGUI interactUI; // Remplacer Text par TextMeshProUGUI
+    public TextMeshProUGUI InteractUILadder; // Remplacer Text par TextMeshProUGUI
 
     private PlayerMovement playerMovement;
 
@@ -16,16 +16,16 @@ public class Ladder : MonoBehaviour
     private void Awake()
     {
         playerMovement = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerMovement>();
-        interactUI = GameObject.FindGameObjectWithTag("InteractUI").GetComponent<TextMeshProUGUI>(); // Récupération du TextMeshProUGUI
+        InteractUILadder = GameObject.FindGameObjectWithTag("InteractUILadder").GetComponent<TextMeshProUGUI>(); // Récupération du TextMeshProUGUI
     }
 
-    // Start is called before the first frame update
+
     void Start()
     {
 
     }
 
-    // Update is called once per frame
+
     void Update()
     {
         if (isInRange && playerMovement.isClimbing && Input.GetKeyDown(KeyCode.E))
@@ -47,7 +47,7 @@ public class Ladder : MonoBehaviour
     {
         if (collision.CompareTag("Player"))
         {
-            interactUI.enabled = true; // Affiche l'UI d'interaction
+            InteractUILadder.enabled = true; // Affiche l'UI d'interaction
             isInRange = true;
         }
     }
@@ -61,8 +61,8 @@ public class Ladder : MonoBehaviour
             if (playerMovement.isGrounded)
             {
                 playerMovement.isClimbing = false;
-                topCollider2D.isTrigger = false;
-                interactUI.enabled = false; // Cache l'UI d'interaction
+                topCollider2D.isTrigger = false; // Pour marcher sur le collider (sol au dessus de l'echelle)
+                InteractUILadder.enabled = false; // Cache l'UI d'interaction
             }
         }
     }

@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 /// <summary>
@@ -11,6 +12,8 @@ public class CheckPoint : MonoBehaviour
     // Référence à la position de réapparition du joueur (playerSpawn) sous forme de Transform.
     private Transform playerSpawn;
 
+    public TextMeshProUGUI InteractUIChP;
+
     /// <summary>
     /// Appelé au moment où l'objet est initialisé.
     /// Ici, on cherche et assigne le Transform du spawn du joueur via son tag "PlayerSpawn".
@@ -19,6 +22,8 @@ public class CheckPoint : MonoBehaviour
     {
         // Trouve l'objet avec le tag "PlayerSpawn" et récupère son Transform.
         playerSpawn = GameObject.FindGameObjectWithTag("PlayerSpawn").transform;
+        InteractUIChP = GameObject.FindGameObjectWithTag("InteractUIChP").GetComponent<TextMeshProUGUI>(); // Récupération du TextMeshProUGUI
+
     }
 
     /// <summary>
@@ -40,6 +45,26 @@ public class CheckPoint : MonoBehaviour
             gameObject.GetComponent<BoxCollider2D>().enabled = false;
 
             Debug.LogWarning("Checkpoint désactivé");
+
+            // Lance la coroutine pour afficher le message pendant 2 secondes.
+            StartCoroutine(ShowMessageForDuration(2f));
         }
+    }
+
+    /// <summary>
+    /// Methode coroutine  pour le temps d'affichage du message 
+    /// </summary>
+    /// <param name="duration"></param>
+    /// <returns></returns>
+    private IEnumerator ShowMessageForDuration(float duration)
+    {
+        // Active le message.
+        InteractUIChP.enabled = true;
+
+        // Attend pendant la durée spécifiée.
+        yield return new WaitForSeconds(duration);
+
+        // Désactive le message après la durée spécifiée.
+        InteractUIChP.enabled = false;
     }
 }

@@ -8,6 +8,8 @@ TagManager:
   - PlayerSpawn
   - FadeSystem
   - InteractUI
+  - InteractUILadder
+  - InteractUIChP
   layers:
   - Default
   - TransparentFX

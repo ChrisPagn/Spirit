@@ -117,6 +117,7 @@ public class PlayerMovement : MonoBehaviour
 
         // Calcul de la vitesse du personnage (Player) et renvoie tjs une valeur positive (Problème du gauche - droite ou arrière - avant)
         float characterVelocity = Mathf.Abs(velocity.x);
+
         animator.SetFloat("Speed", characterVelocity);
         animator.SetBool("isClimbing", isClimbing);
     }
@@ -170,10 +171,7 @@ public class PlayerMovement : MonoBehaviour
             // Applique un lissage à la vélocité du joueur pour un mouvement plus fluide
             // SmoothDamp lisse la transition entre la vélocité actuelle et la cible
             rigidbody2D.velocity = Vector2.SmoothDamp(rigidbody2D.velocity, targetVelocity, ref velocity, .05f);
-
-        }
-
-        
+        }        
     }
 
     /// <summary>
