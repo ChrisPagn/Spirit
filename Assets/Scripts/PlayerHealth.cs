@@ -31,6 +31,17 @@ public class PlayerHealth : MonoBehaviour
 
     public static PlayerHealth instance;
 
+    private void Awake()
+    {
+        if (instance != null)
+        {
+            Debug.LogWarning("Il y a plus d'une instance PlayerHealth dans la scène");
+            return;
+        }
+
+        instance = this;
+    }
+
     // Start est appelé au début du jeu
     void Start()
     {
@@ -47,20 +58,11 @@ public class PlayerHealth : MonoBehaviour
         // Test de prise de dégâts avec la touche H (pour les tests en développement)
         if (Input.GetKeyDown(KeyCode.H))
         {
-            TakeDamage(20); // Réduit la santé de 20 si on appuie sur H
+            //********************************************************
+            TakeDamage(60); // Réduit la santé de X si on appuie sur H
         }
     }
-
-    private void Awake()
-    {
-        if (instance != null) 
-        {
-            Debug.LogWarning("Il y a plus d'une instance PlayerHealth dans la scène");
-            return;  
-        }
-
-        instance = this;
-    }
+        
 
     /// <summary>
     /// Méthode appelée lorsque le joueur reprend de la vie.
@@ -87,6 +89,13 @@ public class PlayerHealth : MonoBehaviour
             // Mise à jour de la barre de vie
             healthBar.SetHealth(currentHealth);
 
+            //verifie si le joueur est toujours vivant
+            if (currentHealth <= 0)
+            {
+                Die();
+                return;
+            }
+
             // Activer l'invincibilité pour empêcher d'autres dégâts
             isInvincible = true;
 
@@ -95,6 +104,23 @@ public class PlayerHealth : MonoBehaviour
             StartCoroutine(HandleInvincibilityDealy());
         }
     }
+
+    /// <summary>
+    /// Methode pour la mort du joueur
+    /// </summary>
+   public void Die()
+   {
+        Debug.Log("Le joueur est eliminé");   
+        //bloquer les mouvements du personnage (passage de l'instance singleton a false)
+        PlayerMovement.instance.enabled = false;
+
+        //jouer l'animation d'elimination en passant par le singleton => animation die
+        PlayerMovement.instance.animator.SetTrigger("Die");
+
+        //empecher les interactions physique avec les autres elements de la scène
+        PlayerMovement.instance.rigidbody2D.bodyType = RigidbodyType2D.Kinematic;
+        PlayerMovement.instance.playerCollider.enabled = false; 
+   }
 
     /// <summary>
     /// Coroutine qui fait clignoter le sprite du joueur pour indiquer l'invincibilité.

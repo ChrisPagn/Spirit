@@ -82,6 +82,28 @@ public class PlayerMovement : MonoBehaviour
     /// </summary>
     private Vector2 velocity = Vector2.zero; // Utilisation de Vector2 pour les mouvements en 2D
 
+    public CapsuleCollider2D playerCollider;
+    public static PlayerMovement instance;
+
+    /// <summary>
+    /// Méthode appelée au démarrage du script.
+    /// Empêche la destruction du joueur lors du changement de scène.
+    /// </summary>
+    private void Awake()
+    {
+        if (instance != null)
+        {
+            Debug.LogWarning("Il y a plus d'une instance PlayerMovement dans la scène");
+            return;
+        }
+
+        instance = this;
+
+        // Empêche la destruction du joueur lors du changement de scène
+        DontDestroyOnLoad(gameObject);
+        Debug.LogWarning("Player Not Destroy change scene!");
+    }
+
     /// <summary>
     /// Méthode appelée au démarrage du script.
     /// Initialise le Rigidbody2D si non assigné dans l'éditeur.
@@ -198,13 +220,4 @@ public class PlayerMovement : MonoBehaviour
         Gizmos.DrawWireSphere(groundCheck.position, groundCheckRadius);
     }
 
-    /// <summary>
-    /// Méthode appelée au démarrage du script.
-    /// Empêche la destruction du joueur lors du changement de scène.
-    /// </summary>
-    void Awake()
-    {
-        DontDestroyOnLoad(gameObject);
-        Debug.LogWarning("Player Not Destroy change scene!");
-    }
 }
