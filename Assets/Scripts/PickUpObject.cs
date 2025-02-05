@@ -31,6 +31,9 @@ public class PickUpObject : MonoBehaviour
             // Ajoute une pièce (ou un autre objet) à l'inventaire via le Singleton Inventory
             Inventory.Instance.AddCoins(1);
 
+            //compte les pieces acquise dans le niveau
+            CurrentSceneManager.instance.coinsPickedUpInThisSceneCount++;
+
             // Détruit l'objet collecté du jeu après la collecte
             Destroy(gameObject);
         }

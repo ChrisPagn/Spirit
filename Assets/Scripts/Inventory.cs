@@ -61,4 +61,26 @@ public class Inventory : MonoBehaviour
             coinsText.text = coinsCount.ToString();
         }
     }
+
+    /// <summary>
+    /// Méthode pour retirer un certain nombre de pièces de l'inventaire et mettre à jour l'interface utilisateur.
+    /// </summary>
+    /// <param name="count">Le nombre de pièces à retirer</param>
+    public void RemoveCoins(int count)
+    {
+        // Diminue le compteur de pièces
+        coinsCount -= count;
+
+        // Si un texte standard (UnityEngine.UI) est assigné, met à jour son affichage avec le nouveau nombre de pièces
+        if (coinsCountText != null)
+        {
+            coinsCountText.text = coinsCount.ToString();
+        }
+
+        // Si un texte TextMeshPro est assigné, met à jour son affichage avec le nouveau nombre de pièces
+        if (coinsText != null)
+        {
+            coinsText.text = coinsCount.ToString();
+        }
+    }
 }

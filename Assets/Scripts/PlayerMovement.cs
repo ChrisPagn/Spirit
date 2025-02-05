@@ -129,7 +129,7 @@ public class PlayerMovement : MonoBehaviour
         verticalMovement = Input.GetAxis("Vertical") * climbSpeed * Time.fixedDeltaTime;
         
         // Vérifie si le joueur est en train de sauter (barre espace)
-        if (Input.GetButtonDown("Jump") && isGrounded)
+        if (Input.GetButtonDown("Jump") && isGrounded && !isClimbing)
         {
             isJumping = true;
         }
