@@ -134,6 +134,7 @@ public class PlayerHealth : MonoBehaviour
 
             // Empêcher les interactions physiques avec les autres éléments de la scène
             PlayerMovement.instance.rigidbody2D.bodyType = RigidbodyType2D.Kinematic;
+            PlayerMovement.instance.rigidbody2D.velocity = Vector2.zero;
             PlayerMovement.instance.playerCollider.enabled = false;
         }
         else
