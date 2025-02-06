@@ -3,6 +3,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.Audio;
 using UnityEngine.UI;
+using System.Linq;
 
 public class SettingsMenu : MonoBehaviour
 {
@@ -13,7 +14,12 @@ public class SettingsMenu : MonoBehaviour
 
     public void Start()
     {
-        resolutions = Screen.resolutions;
+        // commande sql qui permet de ne pas avoide duplication de resolution dans la dropdown (Select - Distinct)
+        resolutions = Screen.resolutions
+                   .Select(resolution => new Resolution { width = resolution.width, height = resolution.height })
+                   .Distinct()
+                   .ToArray();
+
         resolutionDropDown.ClearOptions();
 
         List<TMP_Dropdown.OptionData> options = new List<TMP_Dropdown.OptionData>();
@@ -33,6 +39,17 @@ public class SettingsMenu : MonoBehaviour
         }
 
         resolutionDropDown.AddOptions(options);
+        resolutionDropDown.value = currentResolutionIndex;
+        resolutionDropDown.RefreshShownValue();
+
+        Screen.fullScreen = true;
+    }
+
+
+    public void SetResolution(int resolutionIndex)
+    {
+        Resolution resolution = resolutions[resolutionIndex];
+        Screen.SetResolution(resolution.width, resolution.height, Screen.fullScreen);
     }
 
     public void SetVolume(float volume)

@@ -4,6 +4,8 @@ public class MainMenu : MonoBehaviour
 {
     public string levelToLoad;
 
+    public GameObject settingsWindow;
+
     /// <summary>
     /// Methode pour lancer le jeu
     /// </summary>
@@ -17,7 +19,15 @@ public class MainMenu : MonoBehaviour
     /// </summary>
     public void SettingsButton()
     {
+        settingsWindow.SetActive(true);
+    }
 
+    /// <summary>
+    /// Methode pour fermer la fenetre settingswindow
+    /// </summary>
+    public void CloseSettingsWindows()
+    {
+        settingsWindow.SetActive(false);
     }
 
     /// <summary>
