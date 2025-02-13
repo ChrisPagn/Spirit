@@ -7,7 +7,7 @@ public class Ladder : MonoBehaviour
 {
     private bool isInRange;
 
-    public TextMeshProUGUI InteractUILadder; // Remplacer Text par TextMeshProUGUI
+    private TextMeshProUGUI InteractUILadder; // Remplacer Text par TextMeshProUGUI
 
     private PlayerMovement playerMovement;
 
