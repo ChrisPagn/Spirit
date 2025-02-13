@@ -8,6 +8,9 @@ using UnityEngine.SceneManagement;
 /// </summary>
 public class LoadSpecificScene : MonoBehaviour
 {
+    public AudioSource audioSource;
+    public AudioClip sound;
+
     // Nom de la scène à charger
     public string sceneName;
 
@@ -19,9 +22,23 @@ public class LoadSpecificScene : MonoBehaviour
     /// </summary>
     private void Awake()
     {
-        // Trouver l'Animator du système de fondu dans la scène via son tag "FadeSystem"
-        fadeSysteme = GameObject.FindWithTag("FadeSystem").GetComponent<Animator>();
+        GameObject fadeObject = GameObject.FindWithTag("FadeSystem");
+
+        if (fadeObject == null)
+        {
+            Debug.LogError(" Aucun GameObject avec le tag 'FadeSystem' trouvé !");
+            return;
+        }
+
+        fadeSysteme = fadeObject.GetComponent<Animator>();
+
+        if (fadeSysteme == null)
+        {
+            Debug.LogError($"L'objet {fadeObject.name} a été trouvé mais il ne contient pas d'Animator !");
+        }
     }
+
+
 
     /// <summary>
     /// Méthode appelée lorsqu'un autre objet entre en collision avec le trigger (collider).
@@ -33,6 +50,7 @@ public class LoadSpecificScene : MonoBehaviour
         // Si l'objet entrant dans le trigger est le joueur, lancer la coroutine pour charger la scène
         if (collision.CompareTag("Player"))
         {
+            audioSource.PlayOneShot(sound);
             StartCoroutine(loadNextScene());
         }
     }

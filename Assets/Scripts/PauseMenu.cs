@@ -6,6 +6,7 @@ public class PauseMenu : MonoBehaviour
 {
     public static bool gameIsPaused = false; // Indique si le jeu est en pause
     public GameObject pauseMenuUI; // Référence à l'interface utilisateur du menu pause
+    public GameObject settingsMenuUI;
 
     /// <summary>
     /// Met à jour le comportement du menu pause à chaque frame.
@@ -67,4 +68,22 @@ public class PauseMenu : MonoBehaviour
         // Charge la scène du menu principal
         SceneManager.LoadScene("MainMenu");
     }
+
+    /// <summary>
+    /// Ouvre le menu settings.
+    /// </summary>
+    public void OpenSettingsMenu()
+    {
+        settingsMenuUI.SetActive(true);
+    }
+
+    /// <summary>
+    /// Ferme le menu settings.
+    /// </summary>
+    public void CloseSettingsMenu()
+    {
+        settingsMenuUI.SetActive(false);
+    }
+
+   
 }

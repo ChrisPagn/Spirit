@@ -56,7 +56,7 @@ public class PlayerMovement : MonoBehaviour
     /// Rigidbody2D du joueur.
     /// </summary>
     public Rigidbody2D rigidbody2D;
-
+ 
     /// <summary>
     /// Animator du joueur.
     /// </summary>
@@ -127,11 +127,14 @@ public class PlayerMovement : MonoBehaviour
         
         // Récupère l'input vertical ("Vertical" fait référence aux touches fléchées ou aux sticks analogiques)
         verticalMovement = Input.GetAxis("Vertical") * climbSpeed * Time.fixedDeltaTime;
-        
+
         // Vérifie si le joueur est en train de sauter (barre espace)
         if (Input.GetButtonDown("Jump") && isGrounded && !isClimbing)
         {
+            Debug.Log("Jump button pressed");
             isJumping = true;
+            Debug.Log("Jump initiated");
+            Debug.Log($"isJumping: {isJumping}, isGrounded: {isGrounded}");
         }
 
         // Appelle de la méthode pour l'inversion du sens du personnage lors des déplacements
@@ -162,6 +165,11 @@ public class PlayerMovement : MonoBehaviour
         {
             MovePlayer(0, verticalMovement); // Mouvement vertical uniquement lors de l'escalade
         }
+        if (isGrounded && isJumping)
+        {
+            isJumping = false; // Réinitialisation uniquement quand le joueur touche le sol
+        }
+
     }
 
 
@@ -181,7 +189,7 @@ public class PlayerMovement : MonoBehaviour
             if (isJumping == true)
             {
                 rigidbody2D.AddForce(new Vector2(0f, jumpForce));
-                isJumping = false;
+                //isJumping = false;
             }
         }
         else

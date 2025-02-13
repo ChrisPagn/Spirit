@@ -31,6 +31,9 @@ public class PlayerHealth : MonoBehaviour
 
     public static PlayerHealth instance;
 
+    public AudioSource audioSource;
+    public AudioClip sound;
+
     private void Awake()
     {
         if (instance != null)
@@ -91,6 +94,8 @@ public class PlayerHealth : MonoBehaviour
         // Si le joueur n'est pas invincible, il peut subir des dégâts
         if (!isInvincible)
         {
+            audioSource.PlayOneShot(sound);
+
             // Réduction de la santé
             currentHealth -= damage;
 

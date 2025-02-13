@@ -5,6 +5,9 @@ using UnityEngine;
 /// </summary>
 public class WeakSpot : MonoBehaviour
 {
+    public AudioSource audioSource;
+    public AudioClip sound;
+
     /// <summary>
     /// Objet à détruire lorsqu'un joueur entre en collision avec la zone.
     /// </summary>
@@ -15,11 +18,13 @@ public class WeakSpot : MonoBehaviour
     /// </summary>
     private void OnTriggerEnter2D(Collider2D collision)
     {
+
         // Vérifie si le collider est le joueur
         if (collision.CompareTag("Player"))
         {
-            // Détruit l'objet spécifié
-            Destroy(objectToDestroy);
+            audioSource.PlayOneShot(sound);
+            // Détruit après le temps du son
+            Destroy(objectToDestroy, sound.length);
         }
     }
 }

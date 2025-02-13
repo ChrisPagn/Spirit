@@ -38,5 +38,12 @@ public class MainMenu : MonoBehaviour
         Application.Quit();
     }
 
-    
+    /// <summary>
+    /// Methode pour charger la scene credits
+    /// </summary>
+    public void LoadSceneCredits()
+    {
+        SceneManager.LoadScene("Credits");
+    }
+
 }

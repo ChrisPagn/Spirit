@@ -23,6 +23,8 @@ public class EnemyPatrol : MonoBehaviour
     // Référence au SpriteRenderer pour changer l'orientation de l'ennemi
     public SpriteRenderer orientationPersonnage;
 
+    
+
     /// <summary>
     /// Initialisation au démarrage. Définit la première cible de l'ennemi.
     /// </summary>
@@ -63,16 +65,24 @@ public class EnemyPatrol : MonoBehaviour
     /// <param name="collision">Objet avec lequel l'ennemi est entré en collision</param>
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        // Vérifie si l'objet avec lequel il entre en collision est le joueur
         if (collision.transform.CompareTag("Player"))
         {
-            // Récupère le script PlayerHealth sur le joueur pour appliquer des dégâts
-            PlayerHealth playerHealth = collision.transform.GetComponent<PlayerHealth>();
+            PlayerMovement playerMovement = collision.transform.GetComponent<PlayerMovement>();
 
-            // Si le joueur a un composant PlayerHealth, on lui inflige des dégâts
-            if (playerHealth != null)
+            // Vérifie si le joueur est en train de sauter
+            if (playerMovement != null && playerMovement.isJumping)
             {
-                playerHealth.TakeDamage(damageOnCollision);
+                // Supprimer l'ennemi si le joueur saute dessus
+                Destroy(gameObject);
+            }
+            else
+            {
+                // Sinon, infliger des dégâts au joueur
+                PlayerHealth playerHealth = collision.transform.GetComponent<PlayerHealth>();
+                if (playerHealth != null)
+                {
+                    playerHealth.TakeDamage(damageOnCollision);
+                }
             }
         }
     }

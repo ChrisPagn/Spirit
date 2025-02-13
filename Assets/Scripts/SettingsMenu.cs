@@ -12,8 +12,19 @@ public class SettingsMenu : MonoBehaviour
     Resolution[] resolutions;
     public TMP_Dropdown resolutionDropDown;
 
+    public Slider musicSlider;
+    public Slider soundSlider;
+    public GameObject settingsMenuUI;
+
     public void Start()
     {
+
+        audioMixer.GetFloat("Music", out float musicValueForSlider);
+        musicSlider.value = musicValueForSlider;
+        
+        audioMixer.GetFloat("Sound", out float soundValueForSlider);
+        soundSlider.value = soundValueForSlider;
+
         // commande sql qui permet de ne pas avoide duplication de resolution dans la dropdown (Select - Distinct)
         resolutions = Screen.resolutions
                    .Select(resolution => new Resolution { width = resolution.width, height = resolution.height })
@@ -54,12 +65,27 @@ public class SettingsMenu : MonoBehaviour
 
     public void SetVolume(float volume)
     {
-        audioMixer.SetFloat("volume", volume);
+        audioMixer.SetFloat("Music", volume);
+    }
+
+    public void SetSoundVolume(float volume)
+    {
+        audioMixer.SetFloat("Sound", volume);
     }
 
     public void SetFullScreen(bool isFullScreen)
     {
         Screen.fullScreen = isFullScreen;
     }
+
+    /// <summary>
+    /// Ferme le menu settings.
+    /// </summary>
+    public void CloseSettingsMenu()
+    {
+        settingsMenuUI.SetActive(false);
+    }
+
+
 }
 

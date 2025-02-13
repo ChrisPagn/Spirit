@@ -6,17 +6,10 @@ using UnityEngine;
 /// </summary>
 public class PickUpObject : MonoBehaviour
 {
-    // Start est appelé avant la première image (frame) du jeu.
-    void Start()
-    {
-        // Ce bloc est laissé vide car aucune initialisation n'est nécessaire dans ce cas.
-    }
+    public AudioSource audioSource;
+    public AudioClip sound;
 
-    // Update est appelé une fois par frame (image).
-    void Update()
-    {
-        // Ce bloc est également laissé vide, car aucune mise à jour continue n'est nécessaire pour cet objet.
-    }
+   
 
     /// <summary>
     /// Méthode appelée lorsqu'un autre objet entre dans le collider de cet objet (qui est marqué comme "trigger").
@@ -25,17 +18,18 @@ public class PickUpObject : MonoBehaviour
     /// <param name="collision">Le Collider2D de l'objet qui entre dans la zone de trigger</param>
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        // Si l'objet entrant en collision est le joueur
         if (collision.CompareTag("Player"))
         {
-            // Ajoute une pièce (ou un autre objet) à l'inventaire via le Singleton Inventory
+            audioSource.PlayOneShot(sound);
             Inventory.Instance.AddCoins(1);
-
-            //compte les pieces acquise dans le niveau
             CurrentSceneManager.instance.coinsPickedUpInThisSceneCount++;
 
-            // Détruit l'objet collecté du jeu après la collecte
-            Destroy(gameObject);
+            // Désactive le collider et le renderer pour éviter les interactions visuelles
+            GetComponent<Collider2D>().enabled = false;
+            GetComponent<SpriteRenderer>().enabled = false;
+
+            // Détruit après le temps du son
+            Destroy(gameObject, sound.length);
         }
     }
 }

@@ -33,9 +33,6 @@ public class DeathZone : MonoBehaviour
         // Trouve l'objet ayant le tag "FadeSystem" et récupère son Animator
         GameObject fadeObject = GameObject.FindGameObjectWithTag("FadeSystem");
 
-        //// Trouve le gestionnaire de zones de mort
-        //zoneManager = FindObjectOfType<DeathZonesManager>();
-
         // Trouve le joueur au début du jeu
         player = GameObject.FindGameObjectWithTag("Player");
 
