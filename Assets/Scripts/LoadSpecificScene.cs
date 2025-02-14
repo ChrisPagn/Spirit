@@ -15,7 +15,7 @@ public class LoadSpecificScene : MonoBehaviour
     public string sceneName;
 
     // Référence à l'Animator pour la transition de fondu
-    public Animator fadeSysteme;
+    private Animator fadeSysteme;
 
     /// <summary>
     /// Méthode appelée lors de l'initialisation du script. Trouve et assigne le système de fondu via son tag.
@@ -63,6 +63,8 @@ public class LoadSpecificScene : MonoBehaviour
     {
         // Trouver le joueur et le Canvas UI
         GameObject player = GameObject.FindGameObjectWithTag("Player");
+
+        LoadAndSaveData.instance.SaveData();          
 
         // Déclencher l'animation de fondu via l'Animator
         fadeSysteme.SetTrigger("FadeIn");

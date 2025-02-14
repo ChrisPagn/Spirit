@@ -31,7 +31,7 @@ public class Chest : MonoBehaviour
     public void OpenChest()
     {
         animator.SetTrigger("OpenChest");
-        Inventory.Instance.AddCoins(coinsToAdd);
+        Inventory.instance.AddCoins(coinsToAdd);
         audioSource.PlayOneShot(sound);
         GetComponent<BoxCollider2D>().enabled = false;
         InteractUILadder.enabled = false;

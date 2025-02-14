@@ -21,7 +21,7 @@ public class PickUpObject : MonoBehaviour
         if (collision.CompareTag("Player"))
         {
             audioSource.PlayOneShot(sound);
-            Inventory.Instance.AddCoins(1);
+            Inventory.instance.AddCoins(1);
             CurrentSceneManager.instance.coinsPickedUpInThisSceneCount++;
 
             // Désactive le collider et le renderer pour éviter les interactions visuelles

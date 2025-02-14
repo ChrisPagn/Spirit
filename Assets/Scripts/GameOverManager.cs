@@ -28,7 +28,7 @@ public class GameOverManager : MonoBehaviour
     /// </summary>
     public void RetryButton()
     {
-        Inventory.Instance.RemoveCoins(CurrentSceneManager.instance.coinsPickedUpInThisSceneCount);
+        Inventory.instance.RemoveCoins(CurrentSceneManager.instance.coinsPickedUpInThisSceneCount);
         //recharge la scene
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
         //replace le joueur au spawn

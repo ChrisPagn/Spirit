@@ -17,7 +17,7 @@ public class Inventory : MonoBehaviour
     public TMP_Text coinsText;
 
     // Instance Singleton de l'inventaire
-    public static Inventory Instance;
+    public static Inventory instance;
 
     /// <summary>
     /// La méthode Awake est appelée lorsque le script est chargé pour la première fois. 
@@ -26,7 +26,7 @@ public class Inventory : MonoBehaviour
     private void Awake()
     {
         // Vérifie si une autre instance d'Inventory existe déjà
-        if (Instance != null)
+        if (instance != null)
         {
             // Avertissement dans la console Unity si plus d'une instance est présente
             Debug.LogWarning("Il y a plus d'une instance de Inventory dans la scène!");
@@ -37,7 +37,7 @@ public class Inventory : MonoBehaviour
         }
 
         // Assigne cette instance comme étant l'instance unique (Singleton)
-        Instance = this;
+        instance = this;
     }
 
     /// <summary>
@@ -52,14 +52,14 @@ public class Inventory : MonoBehaviour
         // Si un texte standard (UnityEngine.UI) est assigné, met à jour son affichage avec le nouveau nombre de pièces
         if (coinsCountText != null)
         {
-            coinsCountText.text = coinsCount.ToString();
-        }
+               UpdateTextUI();
+          }
 
         // Si un texte TextMeshPro est assigné, met à jour son affichage avec le nouveau nombre de pièces
         if (coinsText != null)
         {
-            coinsText.text = coinsCount.ToString();
-        }
+               UpdateTextUI();
+          }
     }
 
     /// <summary>
@@ -74,13 +74,18 @@ public class Inventory : MonoBehaviour
         // Si un texte standard (UnityEngine.UI) est assigné, met à jour son affichage avec le nouveau nombre de pièces
         if (coinsCountText != null)
         {
-            coinsCountText.text = coinsCount.ToString();
-        }
+               UpdateTextUI();
+          }
 
         // Si un texte TextMeshPro est assigné, met à jour son affichage avec le nouveau nombre de pièces
         if (coinsText != null)
         {
-            coinsText.text = coinsCount.ToString();
+               UpdateTextUI();
         }
     }
+
+     public void UpdateTextUI()
+     {
+          coinsText.text = coinsCount.ToString();
+     }
 }
