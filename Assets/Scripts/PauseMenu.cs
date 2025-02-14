@@ -61,8 +61,6 @@ public class PauseMenu : MonoBehaviour
     /// </summary>
     public void LoadMainMenu()
     {
-        // Retire l'objet de la liste DontDestroyOnLoad
-        DontDestroyLoadScene.instance.RemoveFromDontDestroyOnLoad();
         // Reprend le jeu avant de charger le menu principal
         Resume();
         // Charge la scène du menu principal

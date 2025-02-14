@@ -51,7 +51,7 @@ public class LoadSpecificScene : MonoBehaviour
         if (collision.CompareTag("Player"))
         {
             audioSource.PlayOneShot(sound);
-            StartCoroutine(loadNextScene());
+            StartCoroutine(LoadNextScene());
         }
     }
 
@@ -59,23 +59,10 @@ public class LoadSpecificScene : MonoBehaviour
     /// Coroutine qui gère le chargement de la nouvelle scène avec un fondu.
     /// </summary>
     /// <returns>Un IEnumerator nécessaire pour le fonctionnement d'une coroutine</returns>
-    public IEnumerator loadNextScene()
+    public IEnumerator LoadNextScene()
     {
         // Trouver le joueur et le Canvas UI
         GameObject player = GameObject.FindGameObjectWithTag("Player");
-        Canvas canvasUI = GameObject.FindObjectOfType<Canvas>();
-
-        // Empêcher la destruction du joueur lors du chargement de la nouvelle scène
-        if (player != null)
-        {
-            DontDestroyOnLoad(player);
-        }
-
-        // Empêcher la destruction du Canvas UI, mais seulement s'il n'est pas déjà persistant
-        if (canvasUI != null && !canvasUI.gameObject.scene.name.Equals("DontDestroyOnLoad"))
-        {
-            DontDestroyOnLoad(canvasUI.gameObject);
-        }
 
         // Déclencher l'animation de fondu via l'Animator
         fadeSysteme.SetTrigger("FadeIn");

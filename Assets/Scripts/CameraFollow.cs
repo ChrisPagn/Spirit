@@ -24,15 +24,6 @@ public class CameraFollow : MonoBehaviour
     private GameObject player;
 
     /// <summary>
-    /// Appelé lors de l'initialisation de l'objet.
-    /// Utilisé pour empêcher la destruction de la caméra lors des changements de scène.
-    /// </summary>
-    private void Awake()
-    {
-        DontDestroyOnLoad(gameObject); // Garde la caméra en vie à travers les changements de scènes.
-    }
-
-    /// <summary>
     /// Abonnement à l'événement de chargement de scène.
     /// </summary>
     private void OnEnable()

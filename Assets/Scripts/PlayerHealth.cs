@@ -138,8 +138,8 @@ public class PlayerHealth : MonoBehaviour
             PlayerMovement.instance.animator.SetTrigger("Die");
 
             // Empêcher les interactions physiques avec les autres éléments de la scène
-            PlayerMovement.instance.rigidbody2D.bodyType = RigidbodyType2D.Kinematic;
-            PlayerMovement.instance.rigidbody2D.velocity = Vector2.zero;
+            PlayerMovement.instance.rigidbody.bodyType = RigidbodyType2D.Kinematic;
+            PlayerMovement.instance.rigidbody.velocity = Vector2.zero;
             PlayerMovement.instance.playerCollider.enabled = false;
         }
         else
@@ -173,7 +173,7 @@ public class PlayerHealth : MonoBehaviour
             PlayerMovement.instance.animator.SetTrigger("Respawn");
 
             // Empêcher les interactions physiques avec les autres éléments de la scène
-            PlayerMovement.instance.rigidbody2D.bodyType = RigidbodyType2D.Dynamic;
+            PlayerMovement.instance.rigidbody.bodyType = RigidbodyType2D.Dynamic;
             PlayerMovement.instance.playerCollider.enabled = true;
             // chargement de la vie du joueur
             currentHealth = maxHealth;

@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 /// <summary>
@@ -55,7 +56,7 @@ public class PlayerMovement : MonoBehaviour
     /// <summary>
     /// Rigidbody2D du joueur.
     /// </summary>
-    public Rigidbody2D rigidbody2D;
+    public new Rigidbody2D rigidbody;
  
     /// <summary>
     /// Animator du joueur.
@@ -99,8 +100,6 @@ public class PlayerMovement : MonoBehaviour
 
         instance = this;
 
-        // Empêche la destruction du joueur lors du changement de scène
-        DontDestroyOnLoad(gameObject);
         Debug.LogWarning("Player Not Destroy change scene!");
     }
 
@@ -111,9 +110,9 @@ public class PlayerMovement : MonoBehaviour
     void Start()
     {
         // Vérifie si le Rigidbody2D est assigné, sinon essaie de le récupérer automatiquement
-        if (rigidbody2D == null)
+        if (rigidbody == null)
         {
-            rigidbody2D = GetComponent<Rigidbody2D>();
+            rigidbody = GetComponent<Rigidbody2D>();
         }
     }
 
@@ -131,14 +130,12 @@ public class PlayerMovement : MonoBehaviour
         // Vérifie si le joueur est en train de sauter (barre espace)
         if (Input.GetButtonDown("Jump") && isGrounded && !isClimbing)
         {
-            Debug.Log("Jump button pressed");
             isJumping = true;
-            Debug.Log("Jump initiated");
-            Debug.Log($"isJumping: {isJumping}, isGrounded: {isGrounded}");
+            Debug.Log($"Update(): isJumping: {isJumping}, isGrounded: {isGrounded}, isClimbing: {isClimbing}");
         }
 
         // Appelle de la méthode pour l'inversion du sens du personnage lors des déplacements
-        Flip(rigidbody2D.velocity.x);
+        Flip(rigidbody.velocity.x);
 
         // Calcul de la vitesse du personnage (Player) et renvoie tjs une valeur positive (Problème du gauche - droite ou arrière - avant)
         float characterVelocity = Mathf.Abs(velocity.x);
@@ -148,30 +145,51 @@ public class PlayerMovement : MonoBehaviour
     }
 
     /// <summary>
-    /// Méthode appelée à intervalles fixes, utilisée pour appliquer la physique.
-    /// Gère les déplacements du joueur basés sur les inputs.
+    /// Méthode appelée à intervalles fixes, Vérifie si le joueur est au sol en utilisant un cercle de détection autour de groundCheck
+    // groundCheck.position : position du point de contrôle au sol
+    // groundCheckRadius : rayon du cercle de détection
+    // collisionLayers : couche(s) à considérer comme sol
     /// </summary>
     void FixedUpdate()
     {
-        // Vérifier si le joueur est au sol
         isGrounded = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, collinsionLayers);
 
-        // Si le joueur est en train de grimper, ne pas autoriser les sauts et mouvements horizontaux classiques
+        // Si le joueur n'est pas en train de grimper, on applique un mouvement horizontal classique
         if (!isClimbing)
         {
-            MovePlayer(horizontalMovement, 0); // Pas de mouvement vertical si on ne grimpe pas
+            // Le joueur peut se déplacer horizontalement, mais pas verticalement
+            MovePlayer(horizontalMovement, 0);
         }
         else
         {
-            MovePlayer(0, verticalMovement); // Mouvement vertical uniquement lors de l'escalade
+            // Si le joueur est en train de grimper, il ne peut se déplacer que verticalement
+            MovePlayer(0, verticalMovement);
         }
+        // Si le joueur touche le sol et que l'état isJumping est encore actif
         if (isGrounded && isJumping)
         {
-            isJumping = false; // Réinitialisation uniquement quand le joueur touche le sol
+            // Ajoute un léger délai pour éviter une réinitialisation instantanée
+            StartCoroutine(ResetJumpAfterLanding());
         }
 
     }
 
+    private IEnumerator ResetJumpAfterLanding()
+    {
+        // Attendre jusqu'à ce que le joueur soit au sol
+        yield return new WaitUntil(() => isGrounded);
+        Debug.Log($"ResetJumpAfterLanding(): isGrounded: {isGrounded}");
+        // Une fois au sol, attendre un très court délai pour stabiliser le contact
+        //yield return new WaitForSeconds(0.1f); // Ajustez ce délai si nécessaire
+
+        // Vérifiez à nouveau si le joueur est au sol avant de réinitialiser isJumping
+        if (!isGrounded)
+        {
+            isJumping = false;
+            Debug.Log("Le joueur a atterri, isJumping repasse à FALSE.");
+        }
+
+    }
 
     /// <summary>
     /// Applique le mouvement au joueur en lissant la transition vers la vitesse cible.
@@ -182,14 +200,13 @@ public class PlayerMovement : MonoBehaviour
         if (!isClimbing)
         {
             // Crée un vecteur avec la vitesse horizontale et la vitesse verticale actuelle
-            Vector2 targetVelocity = new Vector2(_horizontalMovement, rigidbody2D.velocity.y);
+            Vector2 targetVelocity = new Vector2(_horizontalMovement, rigidbody.velocity.y);
             // Applique un lissage à la vélocité du joueur pour un mouvement plus fluide
             // SmoothDamp lisse la transition entre la vélocité actuelle et la cible
-            rigidbody2D.velocity = Vector2.SmoothDamp(rigidbody2D.velocity, targetVelocity, ref velocity, .05f);
+            rigidbody.velocity = Vector2.SmoothDamp(rigidbody.velocity, targetVelocity, ref velocity, .05f);
             if (isJumping == true)
             {
-                rigidbody2D.AddForce(new Vector2(0f, jumpForce));
-                //isJumping = false;
+                rigidbody.velocity = new Vector2(rigidbody.velocity.x, jumpForce);
             }
         }
         else
@@ -200,7 +217,7 @@ public class PlayerMovement : MonoBehaviour
 
             // Applique un lissage à la vélocité du joueur pour un mouvement plus fluide
             // SmoothDamp lisse la transition entre la vélocité actuelle et la cible
-            rigidbody2D.velocity = Vector2.SmoothDamp(rigidbody2D.velocity, targetVelocity, ref velocity, .05f);
+            rigidbody.velocity = Vector2.SmoothDamp(rigidbody.velocity, targetVelocity, ref velocity, .05f);
         }        
     }
 

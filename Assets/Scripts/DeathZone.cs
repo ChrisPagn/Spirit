@@ -5,12 +5,11 @@ using UnityEngine;
 
 /// <summary>
 /// Ce script gère la zone de mort dans un jeu.
-/// Lorsqu'un joueur entre en collision avec une zone de mort (DeathZone), il est renvoyé à son dernier point de réapparition (spawn).
+/// Lorsqu'un joueur entre en collision avec une zone de mort (DeathZone).
 /// </summary>
 public class DeathZone : MonoBehaviour
 {
-    // Référence au point de réapparition du joueur
-    private Transform playerSpawn;
+    
 
     // Référence à l'Animator qui gère l'animation de transition (comme un effet de fondu)
     private Animator fadeSystem;
@@ -18,33 +17,18 @@ public class DeathZone : MonoBehaviour
     // Référence au GameObject du joueur
     private GameObject player;
 
-    //// Référence au gestionnaire des DeathZones
-    //private DeathZonesManager zoneManager;
-
     /// <summary>
     /// Méthode appelée à l'initialisation de l'objet. 
     /// Elle permet d'assigner les références nécessaires au bon fonctionnement de la DeathZone.
     /// </summary>
     private void Awake()
     {
-        // Trouve l'objet ayant le tag "PlayerSpawn" et récupère son Transform
-        GameObject spawnObject = GameObject.FindGameObjectWithTag("PlayerSpawn");
-
+       
         // Trouve l'objet ayant le tag "FadeSystem" et récupère son Animator
         GameObject fadeObject = GameObject.FindGameObjectWithTag("FadeSystem");
 
         // Trouve le joueur au début du jeu
         player = GameObject.FindGameObjectWithTag("Player");
-
-        // Vérifie si l'objet de spawn du joueur a été trouvé, sinon log un avertissement
-        if (spawnObject != null)
-        {
-            playerSpawn = spawnObject.transform;
-        }
-        else
-        {
-            Debug.LogWarning("Le PlayerSpawn est introuvable !");
-        }
 
         // Vérifie si l'objet de système de fondu a été trouvé, sinon log un avertissement
         if (fadeObject != null)
@@ -76,23 +60,10 @@ public class DeathZone : MonoBehaviour
     /// </summary>
     private IEnumerator ReplacePlayer()
     {
-        // Si un fade system est disponible, déclencher l'animation de fondu et attendre qu'elle se termine
-        if (fadeSystem != null)
-        {
-            fadeSystem.SetTrigger("FadeIn");
-            yield return new WaitForSeconds(1f);
-        }
 
-        // S'assurer que les références au joueur et au point de spawn sont valides avant de déplacer le joueur
-        if (player != null && playerSpawn != null)
-        {
-            // Déplacer le joueur à la position du spawn
-            player.transform.position = playerSpawn.position;
-            Debug.Log("Le joueur a été déplacé à la position de spawn.");
-        }
-        else
-        {
-            Debug.LogWarning("Le joueur ou le PlayerSpawn est manquant.");
-        }
+          fadeSystem.SetTrigger("FadeIn");
+          yield return new WaitForSeconds(0.2f);
+          player.transform.position = CurrentSceneManager.instance.respawnPoint;
+        
     }
 }

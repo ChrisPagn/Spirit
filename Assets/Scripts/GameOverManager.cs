@@ -20,15 +20,7 @@ public class GameOverManager : MonoBehaviour
 
     public void OnPlayerDeath()
     {
-        if (CurrentSceneManager.instance.isPlayerPresentByDefault) 
-        {
-            DontDestroyLoadScene.instance.RemoveFromDontDestroyOnLoad();
-        }
-
-        
         gameOverUI.SetActive(true);
-
-
     }
 
     /// <summary>
@@ -44,14 +36,15 @@ public class GameOverManager : MonoBehaviour
         //reactive les mouvements du joueur + lui rendre sa vie
         gameOverUI.SetActive(false);
     }
+
     /// <summary>
     /// Methode pour retourner au menu principal
     /// </summary>
     public void MainMenuButton()
     {
-        DontDestroyLoadScene.instance.RemoveFromDontDestroyOnLoad();
         SceneManager.LoadScene("MainMenu");
     }
+
     /// <summary>
     /// Methode pour fermer le jeu
     /// </summary>

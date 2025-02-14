@@ -2,9 +2,9 @@ using UnityEngine;
 
 public class CurrentSceneManager : MonoBehaviour
 {
-    public bool isPlayerPresentByDefault  = false;
-
     public int coinsPickedUpInThisSceneCount;
+
+    public Vector3 respawnPoint;
 
     public static CurrentSceneManager instance;
 
@@ -17,5 +17,16 @@ public class CurrentSceneManager : MonoBehaviour
         }
 
         instance = this;
-    }
-}
+
+          // Définir le point de réapparition du joueur dans la scène actuelle
+          GameObject player = GameObject.FindGameObjectWithTag("Player");
+          if (player != null)
+          {
+               respawnPoint = player.transform.position;
+          }
+          else
+          {
+               Debug.LogWarning("Le joueur est introuvable ! Le point de réapparition ne peut pas être défini.");
+          }
+     }     
+}                               

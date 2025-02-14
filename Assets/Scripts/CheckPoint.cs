@@ -9,8 +9,7 @@ using UnityEngine;
 /// </summary>
 public class CheckPoint : MonoBehaviour
 {
-    // Référence à la position de réapparition du joueur (playerSpawn) sous forme de Transform.
-    private Transform playerSpawn;
+ 
 
     public TextMeshProUGUI InteractUIChP;
 
@@ -20,8 +19,7 @@ public class CheckPoint : MonoBehaviour
     /// </summary>
     private void Awake()
     {
-        // Trouve l'objet avec le tag "PlayerSpawn" et récupère son Transform.
-        playerSpawn = GameObject.FindGameObjectWithTag("PlayerSpawn").transform;
+      
         InteractUIChP = GameObject.FindGameObjectWithTag("InteractUIChP").GetComponent<TextMeshProUGUI>(); // Récupération du TextMeshProUGUI
 
     }
@@ -39,7 +37,7 @@ public class CheckPoint : MonoBehaviour
             Debug.LogWarning("Le joueur est passé par le checkpoint");
 
             // Déplace la position du spawn du joueur à la position actuelle du checkpoint.
-            playerSpawn.position = transform.position;
+           CurrentSceneManager.instance.respawnPoint = transform.position;
 
             // Désactive le collider du checkpoint pour éviter qu'il soit déclenché à nouveau.
             gameObject.GetComponent<BoxCollider2D>().enabled = false;
