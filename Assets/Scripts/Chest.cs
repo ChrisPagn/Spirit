@@ -1,7 +1,9 @@
-
 using TMPro;
 using UnityEngine;
 
+/// <summary>
+/// Gestion du coffre a Bonus
+/// </summary>
 public class Chest : MonoBehaviour
 {
 

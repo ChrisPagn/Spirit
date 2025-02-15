@@ -1,5 +1,9 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
+
+/// <summary>
+/// Gestion du Menu GameOver (Mort du joueur)
+/// </summary>
 public class GameOverManager : MonoBehaviour
 {
 

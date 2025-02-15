@@ -8,13 +8,24 @@ using UnityEngine.SceneManagement;
 /// </summary>
 public class LoadSpecificScene : MonoBehaviour
 {
+    /// <summary>
+    /// playlist disponible dans l'audioManager
+    /// </summary>
     public AudioSource audioSource;
+
+    /// <summary>
+    /// clip ou son 
+    /// </summary>
     public AudioClip sound;
 
-    // Nom de la scène à charger
+    /// <summary>
+    /// Nom de la scène à charger
+    /// </summary>
     public string sceneName;
 
-    // Référence à l'Animator pour la transition de fondu
+    /// <summary>
+    /// Référence à l'Animator pour la transition de fondu
+    /// </summary>
     private Animator fadeSysteme;
 
     /// <summary>
@@ -64,7 +75,10 @@ public class LoadSpecificScene : MonoBehaviour
         // Trouver le joueur et le Canvas UI
         GameObject player = GameObject.FindGameObjectWithTag("Player");
 
-        LoadAndSaveData.instance.SaveData();          
+        //sauvegarde des données
+        LoadAndSaveData.instance.SaveData();
+        Debug.LogWarning("Données suavegardées au passage de niveau");
+
 
         // Déclencher l'animation de fondu via l'Animator
         fadeSysteme.SetTrigger("FadeIn");

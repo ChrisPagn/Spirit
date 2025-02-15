@@ -3,7 +3,8 @@ using UnityEngine.UI;
 using TMPro;
 
 /// <summary>
-/// Ce script gère l'inventaire, plus précisément le compteur de pièces du joueur, et met à jour l'interface utilisateur en conséquence.
+/// Ce script gère l'inventaire, plus précisément le compteur de pièces du joueur, 
+/// et met à jour l'interface utilisateur en conséquence.
 /// </summary>
 public class Inventory : MonoBehaviour
 {
@@ -53,13 +54,13 @@ public class Inventory : MonoBehaviour
         if (coinsCountText != null)
         {
                UpdateTextUI();
-          }
+        }
 
         // Si un texte TextMeshPro est assigné, met à jour son affichage avec le nouveau nombre de pièces
         if (coinsText != null)
         {
                UpdateTextUI();
-          }
+        }
     }
 
     /// <summary>

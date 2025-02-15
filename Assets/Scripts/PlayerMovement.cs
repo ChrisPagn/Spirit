@@ -83,7 +83,14 @@ public class PlayerMovement : MonoBehaviour
     /// </summary>
     private Vector2 velocity = Vector2.zero; // Utilisation de Vector2 pour les mouvements en 2D
 
+    /// <summary>
+    /// Sphere de collision autour du joueur
+    /// </summary>
     public CapsuleCollider2D playerCollider;
+
+    /// <summary>
+    /// singleton de l'instance
+    /// </summary>
     public static PlayerMovement instance;
 
     /// <summary>

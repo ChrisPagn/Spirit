@@ -29,10 +29,15 @@ public class LoadAndSaveData : MonoBehaviour
           //PlayerHealth.instance.healthBar.SetHealth(currentHealth);
     }
 
-    
-     public void SaveData()
-     {
-          PlayerPrefs.SetInt("coinsCount",Inventory.instance.coinsCount);
+
+    public void SaveData()
+    {
+        PlayerPrefs.SetInt("coinsCount", Inventory.instance.coinsCount);
+
+        if (CurrentSceneManager.instance.levelToUnlock > PlayerPrefs.GetInt("levelReached", 1))
+        {
+            PlayerPrefs.SetInt("levelReached", CurrentSceneManager.instance.levelToUnlock);
+        }
           //PlayerPrefs.SetInt("playerHealth",PlayerHealth.instance.currentHealth);
      }
 }

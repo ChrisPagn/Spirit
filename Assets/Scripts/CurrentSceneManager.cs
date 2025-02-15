@@ -6,6 +6,11 @@ public class CurrentSceneManager : MonoBehaviour
 
     public Vector3 respawnPoint;
 
+    public int levelToUnlock;
+
+    /// <summary>
+    /// singleton de l'instance
+    /// </summary>
     public static CurrentSceneManager instance;
 
     private void Awake()

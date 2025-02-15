@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &5633378597812392666
+--- !u!1 &6464472992575292789
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,41 +8,41 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 5633378597812392662}
-  - component: {fileID: 5633378597812392663}
-  - component: {fileID: 5633378597812392664}
-  - component: {fileID: 5633378597812392665}
-  - component: {fileID: 6094786709626873246}
-  - component: {fileID: 6522838502433490739}
+  - component: {fileID: 6464472992575292793}
+  - component: {fileID: 6464472992575292792}
+  - component: {fileID: 6464472992575292791}
+  - component: {fileID: 6464472992575292790}
+  - component: {fileID: 4831979958706319921}
+  - component: {fileID: 5556996765097513116}
   m_Layer: 0
   m_Name: Door
-  m_TagString: Untagged
+  m_TagString: FadeSystem
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &5633378597812392662
+--- !u!4 &6464472992575292793
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5633378597812392666}
+  m_GameObject: {fileID: 6464472992575292789}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 44.69, y: 4.06, z: 0}
+  m_LocalPosition: {x: 56.72, y: 4.06, z: 0}
   m_LocalScale: {x: 1.9078504, y: 2.1349213, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!212 &5633378597812392663
+--- !u!212 &6464472992575292792
 SpriteRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5633378597812392666}
+  m_GameObject: {fileID: 6464472992575292789}
   m_Enabled: 1
   m_CastShadows: 0
   m_ReceiveShadows: 0
@@ -88,13 +88,13 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!61 &5633378597812392664
+--- !u!61 &6464472992575292791
 BoxCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5633378597812392666}
+  m_GameObject: {fileID: 6464472992575292789}
   m_Enabled: 1
   m_Density: 1
   m_Material: {fileID: 0}
@@ -114,29 +114,28 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
---- !u!114 &5633378597812392665
+--- !u!114 &6464472992575292790
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5633378597812392666}
+  m_GameObject: {fileID: 6464472992575292789}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a70404aaf5fba1e40b05c54e28b997a2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  audioSource: {fileID: 6094786709626873246}
+  audioSource: {fileID: 4831979958706319921}
   sound: {fileID: 8300000, guid: c5061389817de9a4493daaed94d2d067, type: 3}
   sceneName: level02
-  fadeSysteme: {fileID: 6522838502433490739}
---- !u!82 &6094786709626873246
+--- !u!82 &4831979958706319921
 AudioSource:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5633378597812392666}
+  m_GameObject: {fileID: 6464472992575292789}
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 6545680362456021979, guid: d2685ca49225c1745b18db034b27e73e, type: 2}
@@ -226,14 +225,14 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
---- !u!95 &6522838502433490739
+--- !u!95 &5556996765097513116
 Animator:
   serializedVersion: 4
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5633378597812392666}
+  m_GameObject: {fileID: 6464472992575292789}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
   m_Controller: {fileID: 9100000, guid: f21a7c5edb3a5f844bde0b0b21d92fe6, type: 2}

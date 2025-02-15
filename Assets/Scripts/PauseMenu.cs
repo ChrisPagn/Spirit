@@ -2,6 +2,9 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
+/// <summary>
+/// Gestion de la fenêtre du menu Pause
+/// </summary>
 public class PauseMenu : MonoBehaviour
 {
     public static bool gameIsPaused = false; // Indique si le jeu est en pause
