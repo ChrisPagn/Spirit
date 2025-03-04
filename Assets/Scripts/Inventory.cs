@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
@@ -13,6 +14,9 @@ public class Inventory : MonoBehaviour
 
     // Texte standard pour afficher le nombre de pièces dans l'interface utilisateur (UnityEngine.UI)
     public Text coinsCountText;
+
+    public List<Item> contentItems = new List<Item>();
+    public int contentCurrentIndex = 0;
 
     // Texte pour TextMeshPro pour afficher le nombre de pièces dans l'interface utilisateur (TMPro)
     public TMP_Text coinsText;
@@ -40,6 +44,36 @@ public class Inventory : MonoBehaviour
         // Assigne cette instance comme étant l'instance unique (Singleton)
         instance = this;
     }
+
+   
+
+    public void ConsumeItem()
+    {
+        Item currentItem = contentItems[contentCurrentIndex];
+        PlayerHealth.instance.HealPlayer(currentItem.hpGiven);
+        PlayerMovement.instance.moveSpeed += currentItem.speedGiven;
+        contentItems.Remove(currentItem);
+        GetNextItem();
+    }
+
+    public void GetNextItem()
+    {
+        contentCurrentIndex++;
+        if (contentCurrentIndex > contentItems.Count - 1)
+        {
+            contentCurrentIndex = 0;
+        }
+    }
+
+    public void GetPreviousItem()
+    {
+        contentCurrentIndex--;
+        if (contentCurrentIndex < 0)
+        {
+            contentCurrentIndex = contentItems.Count - 1;
+        }
+    }
+
 
     /// <summary>
     /// Méthode pour ajouter un certain nombre de pièces à l'inventaire et mettre à jour l'interface utilisateur.

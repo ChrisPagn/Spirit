@@ -68,7 +68,7 @@ public class PlayerHealth : MonoBehaviour
         // Test de prise de dégâts avec la touche H (pour les tests en développement)
         if (Input.GetKeyDown(KeyCode.H))
         {
-            TakeDamage(110); // Réduit la santé de X si on appuie sur H
+            TakeDamage(40); // Réduit la santé de X si on appuie sur H
         }
     }
 
