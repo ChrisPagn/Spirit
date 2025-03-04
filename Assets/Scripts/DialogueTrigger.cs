@@ -1,13 +1,21 @@
 using System;
+using TMPro;
 using UnityEngine;
 
 public class DialogueTrigger : MonoBehaviour
 {
     public Dialogue dialogue;
 
-    public bool isInRange;
+    private bool isInRange;
 
-    
+    private TextMeshProUGUI interactUI;
+
+
+    private void Awake()
+    {
+        interactUI = GameObject.FindGameObjectWithTag("InteractUILadder").GetComponent<TextMeshProUGUI>(); 
+    }
+
     void Update()
     {
         if (isInRange && Input.GetKeyDown(KeyCode.E)) 
@@ -26,6 +34,7 @@ public class DialogueTrigger : MonoBehaviour
         if (collision.CompareTag("Player"))
         {
             isInRange = true;
+            interactUI.enabled = true;
         }
     }
 
@@ -34,6 +43,7 @@ public class DialogueTrigger : MonoBehaviour
         if (collision.CompareTag("Player"))
         {
             isInRange = false;
+            interactUI.enabled = false;
         }
     }
 }

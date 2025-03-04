@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -9,6 +10,9 @@ public class DialogueManager : MonoBehaviour
     public TextMeshProUGUI nameText;
 
     public TextMeshProUGUI dialogueText;
+
+    public Animator animator;
+    private TextMeshProUGUI interactUI;
 
     private Queue<string> sentences;
 
@@ -25,12 +29,14 @@ public class DialogueManager : MonoBehaviour
             return;
         }
         instance = this;
-
+        interactUI = GameObject.FindGameObjectWithTag("InteractUILadder").GetComponent<TextMeshProUGUI>();
         sentences = new Queue<string>();
     }
 
     public void StartDialogue(Dialogue dialogue)
     {
+        animator.SetBool("isOpen", true);
+
         nameText.text = dialogue.name;
         sentences.Clear();
 
@@ -42,7 +48,7 @@ public class DialogueManager : MonoBehaviour
         DisplayNextSetence();
     }
 
-    private void DisplayNextSetence()
+    public void DisplayNextSetence()
     {
         if (sentences.Count == 0) 
         {
@@ -50,11 +56,23 @@ public class DialogueManager : MonoBehaviour
             return;
         }
         string setence = sentences.Dequeue();
-        dialogueText.text = setence;
+        StopAllCoroutines();
+        interactUI.enabled = false;
+        StartCoroutine(TypeSentence(setence));  
     }
 
-    private void EndDialogue()
+    IEnumerator TypeSentence (string sentence)
     {
-        throw new NotImplementedException();
+        dialogueText.text = "";
+        foreach (char letter in sentence.ToCharArray())
+        {
+            dialogueText.text += letter;
+            yield return new WaitForSeconds(0.1f);
+        }
+    }
+
+    public void EndDialogue()
+    {
+        animator.SetBool("isOpen", false);
     }
 }
