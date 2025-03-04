@@ -2,7 +2,8 @@ using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>
-/// Ce script gère la barre de vie d'un personnage, en ajustant la valeur de la santé et en modifiant la couleur en fonction de la santé restante.
+/// Ce script gère la barre de vie d'un personnage, en ajustant la valeur de la santé 
+/// et en modifiant la couleur en fonction de la santé restante.
 /// </summary>
 public class HealthBar : MonoBehaviour
 {

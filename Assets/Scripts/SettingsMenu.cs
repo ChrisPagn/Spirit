@@ -25,7 +25,7 @@ public class SettingsMenu : MonoBehaviour
         audioMixer.GetFloat("Sound", out float soundValueForSlider);
         soundSlider.value = soundValueForSlider;
 
-        // commande sql qui permet de ne pas avoide duplication de resolution dans la dropdown (Select - Distinct)
+        // commande sql qui permet de ne pas avoir de duplication de resolution dans la dropdown (Select - Distinct)
         resolutions = Screen.resolutions
                    .Select(resolution => new Resolution { width = resolution.width, height = resolution.height })
                    .Distinct()

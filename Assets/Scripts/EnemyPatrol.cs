@@ -1,7 +1,8 @@
 using UnityEngine;
 
 /// <summary>
-/// Ce script permet à un ennemi de patrouiller entre plusieurs points (waypoints) et de causer des dégâts au joueur en cas de collision.
+/// Ce script permet à un ennemi de patrouiller entre plusieurs points (waypoints)
+/// et de causer des dégâts au joueur en cas de collision.
 /// </summary>
 public class EnemyPatrol : MonoBehaviour
 {
