@@ -17,6 +17,9 @@ public class Inventory : MonoBehaviour
 
     public List<Item> contentItems = new List<Item>();
     public int contentCurrentIndex = 0;
+    public Image itemImageUI;
+    public Sprite emptyItemImage;
+    public TextMeshProUGUI itemNameUI;
 
     // Texte pour TextMeshPro pour afficher le nombre de pièces dans l'interface utilisateur (TMPro)
     public TMP_Text coinsText;
@@ -45,24 +48,37 @@ public class Inventory : MonoBehaviour
         instance = this;
     }
 
-   
+    public void Start()
+    {
+        UpdateInventoryUI();
+    }
 
     public void ConsumeItem()
     {
+        if (contentItems.Count == 0)
+        {
+            return;
+        }
         Item currentItem = contentItems[contentCurrentIndex];
         PlayerHealth.instance.HealPlayer(currentItem.hpGiven);
         PlayerMovement.instance.moveSpeed += currentItem.speedGiven;
         contentItems.Remove(currentItem);
         GetNextItem();
+        UpdateInventoryUI();
     }
 
     public void GetNextItem()
     {
+        if (contentItems.Count == 0)
+        {
+            return;
+        }
         contentCurrentIndex++;
         if (contentCurrentIndex > contentItems.Count - 1)
         {
             contentCurrentIndex = 0;
         }
+        UpdateInventoryUI();
     }
 
     public void GetPreviousItem()
@@ -72,8 +88,22 @@ public class Inventory : MonoBehaviour
         {
             contentCurrentIndex = contentItems.Count - 1;
         }
+        UpdateInventoryUI();
     }
 
+    public void UpdateInventoryUI()
+    {
+        if (contentItems.Count > 0)
+        {
+            itemImageUI.sprite = contentItems[contentCurrentIndex].image;
+            itemNameUI.text = contentItems[contentCurrentIndex].name;
+        }
+        else
+        {
+            itemImageUI.sprite = emptyItemImage;
+            itemNameUI.text = "";
+        }
+    }
 
     /// <summary>
     /// Méthode pour ajouter un certain nombre de pièces à l'inventaire et mettre à jour l'interface utilisateur.
