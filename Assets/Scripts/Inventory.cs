@@ -16,13 +16,15 @@ public class Inventory : MonoBehaviour
     public Text coinsCountText;
 
     public List<Item> contentItems = new List<Item>();
-    public int contentCurrentIndex = 0;
+    private int contentCurrentIndex = 0;
     public Image itemImageUI;
     public Sprite emptyItemImage;
     public TextMeshProUGUI itemNameUI;
 
     // Texte pour TextMeshPro pour afficher le nombre de pièces dans l'interface utilisateur (TMPro)
     public TMP_Text coinsText;
+
+    public PlayerEffects playerEffects;
 
     // Instance Singleton de l'inventaire
     public static Inventory instance;
@@ -61,7 +63,7 @@ public class Inventory : MonoBehaviour
         }
         Item currentItem = contentItems[contentCurrentIndex];
         PlayerHealth.instance.HealPlayer(currentItem.hpGiven);
-        PlayerMovement.instance.moveSpeed += currentItem.speedGiven;
+        playerEffects.AddSpeed(currentItem.speedGiven, currentItem.speedDuration);  
         contentItems.Remove(currentItem);
         GetNextItem();
         UpdateInventoryUI();
