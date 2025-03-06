@@ -7,7 +7,7 @@ using UnityEngine.UI;
 
 public class DialogueManager : MonoBehaviour
 {
-    public TextMeshProUGUI nameText;
+    public TextMeshProUGUI npcNameText;
 
     public TextMeshProUGUI dialogueText;
 
@@ -37,7 +37,7 @@ public class DialogueManager : MonoBehaviour
     {
         animator.SetBool("isOpen", true);
 
-        nameText.text = dialogue.name;
+        npcNameText.text = dialogue.name;
         sentences.Clear();
 
         foreach (string sentence in dialogue.sentences)
