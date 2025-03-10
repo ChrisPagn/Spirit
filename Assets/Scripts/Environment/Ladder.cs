@@ -1,36 +1,48 @@
-using System.Collections;
-using System.Collections.Generic;
-using TMPro; // Ajoute TextMeshPro namespace
+using TMPro; 
 using UnityEngine;
 
+/// <summary>
+/// Gère l'interaction du joueur avec une échelle, permettant de monter et descendre.
+/// </summary>
 public class Ladder : MonoBehaviour
 {
+    /// <summary>
+    /// Indique si le joueur est à portée de l'échelle.
+    /// </summary>
     private bool isInRange;
 
-    private TextMeshProUGUI interactUILadder; // Remplacer Text par TextMeshProUGUI
+    /// <summary>
+    /// Référence à l'interface utilisateur d'interaction pour l'échelle.
+    /// </summary>
+    private TextMeshProUGUI interactUILadder;
 
+    /// <summary>
+    /// Référence au script de mouvement du joueur.
+    /// </summary>
     private PlayerMovement playerMovement;
 
+    /// <summary>
+    /// Collider en haut de l'échelle pour gérer les interactions avec le joueur.
+    /// </summary>
     public BoxCollider2D topCollider2D;
 
+    /// <summary>
+    /// Initialise les composants nécessaires au démarrage.
+    /// </summary>
     private void Awake()
     {
         playerMovement = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerMovement>();
-        interactUILadder = GameObject.FindGameObjectWithTag("InteractUILadder").GetComponent<TextMeshProUGUI>(); // Récupération du TextMeshProUGUI
+        interactUILadder = GameObject.FindGameObjectWithTag("InteractUILadder").GetComponent<TextMeshProUGUI>();
     }
 
-
-    void Start()
-    {
-
-    }
-
-
+    /// <summary>
+    /// Met à jour le comportement de l'échelle à chaque frame.
+    /// </summary>
     void Update()
     {
         if (isInRange && playerMovement.isClimbing && Input.GetKeyDown(KeyCode.E))
         {
-            // Descendre de l'echelle
+            // Descendre de l'échelle
             playerMovement.isClimbing = false;
             topCollider2D.isTrigger = false;
             return;
@@ -43,26 +55,33 @@ public class Ladder : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Détecte quand le joueur entre dans la zone d'interaction de l'échelle.
+    /// </summary>
+    /// <param name="collision">Le collider du joueur.</param>
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.CompareTag("Player"))
         {
-            interactUILadder.enabled = true; // Affiche l'UI d'interaction
+            interactUILadder.enabled = true;
             isInRange = true;
         }
     }
 
+    /// <summary>
+    /// Détecte quand le joueur sort de la zone d'interaction de l'échelle.
+    /// </summary>
+    /// <param name="collision">Le collider du joueur.</param>
     private void OnTriggerExit2D(Collider2D collision)
     {
         if (collision.CompareTag("Player"))
         {
             isInRange = false;
-            // On ne désactive isClimbing que si le joueur touche le sol
             if (playerMovement.isGrounded)
             {
                 playerMovement.isClimbing = false;
-                topCollider2D.isTrigger = false; // Pour marcher sur le collider (sol au dessus de l'echelle)
-                interactUILadder.enabled = false; // Cache l'UI d'interaction
+                topCollider2D.isTrigger = false;
+                interactUILadder.enabled = false;
             }
         }
     }

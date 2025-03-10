@@ -72,7 +72,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2b051d6876b823c498bb5986c922c448, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  collider2D: {fileID: 7155408653194853416}
+  topCollider2D: {fileID: 7155408653194853416}
 --- !u!1 &7155408653194853418
 GameObject:
   m_ObjectHideFlags: 0

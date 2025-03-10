@@ -181,21 +181,25 @@ public class PlayerMovement : MonoBehaviour
 
     }
 
+    /// <summary>
+    /// Coroutine qui attend que le joueur touche le sol avant de réinitialiser l'état de saut.
+    /// Cela permet d'éviter des bugs où le joueur ne peut pas sauter après un atterrissage.
+    /// </summary>
     private IEnumerator ResetJumpAfterLanding()
     {
         // Attendre jusqu'à ce que le joueur soit au sol
         yield return new WaitUntil(() => isGrounded);
         Debug.Log($"ResetJumpAfterLanding(): isGrounded: {isGrounded}");
-        // Une fois au sol, attendre un très court délai pour stabiliser le contact
-        //yield return new WaitForSeconds(0.1f); // Ajustez ce délai si nécessaire
 
-        // Vérifiez à nouveau si le joueur est au sol avant de réinitialiser isJumping
-        if (!isGrounded)
+        // Une fois au sol, attendre un très court délai pour stabiliser le contact
+        // yield return new WaitForSeconds(0.1f); // Ajustez ce délai si nécessaire
+
+        // Vérifiez à nouveau si le joueur est bien au sol avant de réinitialiser isJumping
+        if (isGrounded) // Correction ici : on veut réinitialiser seulement si le joueur EST au sol
         {
             isJumping = false;
             Debug.Log("Le joueur a atterri, isJumping repasse à FALSE.");
         }
-
     }
 
     /// <summary>

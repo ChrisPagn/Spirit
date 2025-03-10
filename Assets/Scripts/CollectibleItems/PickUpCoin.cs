@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// Ce script gère la collecte d'un objet (comme des pièces ou autres items) par le joueur.
+/// Ce script gère la collecte d'un objet (comme des pièces) par le joueur.
 /// Lorsqu'un joueur entre en collision avec l'objet, celui-ci est ajouté à l'inventaire puis détruit.
 /// </summary>
 public class PickUpCoin : MonoBehaviour

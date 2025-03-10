@@ -1488,70 +1488,18 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 575449167}
     m_Modifications:
-    - target: {fileID: 6031986065266635309, guid: 5554a92d7f70e684fa9e8f5f14a0d025, type: 3}
-      propertyPath: m_AnchorMax.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6031986065266635309, guid: 5554a92d7f70e684fa9e8f5f14a0d025, type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6031986065266635309, guid: 5554a92d7f70e684fa9e8f5f14a0d025, type: 3}
-      propertyPath: m_AnchorMin.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6031986066078544813, guid: 5554a92d7f70e684fa9e8f5f14a0d025, type: 3}
-      propertyPath: m_AnchorMax.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6031986066078544813, guid: 5554a92d7f70e684fa9e8f5f14a0d025, type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 6031986066190959828, guid: 5554a92d7f70e684fa9e8f5f14a0d025, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 575449163}
-    - target: {fileID: 6031986066190959828, guid: 5554a92d7f70e684fa9e8f5f14a0d025, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: CloseSettingsWindows
-      objectReference: {fileID: 0}
-    - target: {fileID: 6031986066190959828, guid: 5554a92d7f70e684fa9e8f5f14a0d025, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
-      value: MainMenu, Assembly-CSharp
-      objectReference: {fileID: 0}
-    - target: {fileID: 6031986066257407041, guid: 5554a92d7f70e684fa9e8f5f14a0d025, type: 3}
-      propertyPath: m_AnchorMax.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6031986066257407041, guid: 5554a92d7f70e684fa9e8f5f14a0d025, type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6031986066726832334, guid: 5554a92d7f70e684fa9e8f5f14a0d025, type: 3}
-      propertyPath: m_AnchorMax.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6031986066726832334, guid: 5554a92d7f70e684fa9e8f5f14a0d025, type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6031986066726832334, guid: 5554a92d7f70e684fa9e8f5f14a0d025, type: 3}
-      propertyPath: m_AnchorMin.x
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 6031986066863073128, guid: 5554a92d7f70e684fa9e8f5f14a0d025, type: 3}
       propertyPath: m_Name
       value: SettingWindow
       objectReference: {fileID: 0}
-    - target: {fileID: 6031986066863073128, guid: 5554a92d7f70e684fa9e8f5f14a0d025, type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 6031986066863073134, guid: 5554a92d7f70e684fa9e8f5f14a0d025, type: 3}
       propertyPath: settingsMenuUI
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 1984902307}
     - target: {fileID: 6031986066863073135, guid: 5554a92d7f70e684fa9e8f5f14a0d025, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -1586,7 +1534,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6031986066863073135, guid: 5554a92d7f70e684fa9e8f5f14a0d025, type: 3}
       propertyPath: m_SizeDelta.y
-      value: 347.876
+      value: 462.9978
       objectReference: {fileID: 0}
     - target: {fileID: 6031986066863073135, guid: 5554a92d7f70e684fa9e8f5f14a0d025, type: 3}
       propertyPath: m_LocalPosition.x
@@ -1622,7 +1570,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6031986066863073135, guid: 5554a92d7f70e684fa9e8f5f14a0d025, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -5
+      value: -51.560913
       objectReference: {fileID: 0}
     - target: {fileID: 6031986066863073135, guid: 5554a92d7f70e684fa9e8f5f14a0d025, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x

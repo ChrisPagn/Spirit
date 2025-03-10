@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 4486263411384287755}
   - component: {fileID: 1573877392}
   - component: {fileID: 4486263411949041502}
+  - component: {fileID: 4486263411949041505}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -106,3 +107,18 @@ MonoBehaviour:
   animator: {fileID: 0}
   sellButtonPrefab: {fileID: 3818153492384467205, guid: 35ba7076bd3bd2b4a91dfd06f5ebfa8e, type: 3}
   sellButtonsParent: {fileID: 0}
+--- !u!114 &4486263411949041505
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4486263411384287754}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f2fb22260ebe54845aa8d7217bbb3aa2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  allItems:
+  - {fileID: 11400000, guid: 19d7d668ab8fa644881624b12cf44eb9, type: 2}
+  - {fileID: 11400000, guid: 72835f018786043479011fafb5513a34, type: 2}

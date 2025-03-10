@@ -6618,17 +6618,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 1180560988580717285, guid: 0228393456e2c13479add537706b8135, type: 3}
   m_PrefabInstance: {fileID: 1997775286}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &2004874043 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 1748549854549944848, guid: 4b85c9bb89a1deb46b6296be2e7b8012, type: 3}
-  m_PrefabInstance: {fileID: 1748549856017602859}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &2034383357
 GameObject:
   m_ObjectHideFlags: 0
@@ -18177,11 +18166,6 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 1748549854431336652, guid: 4b85c9bb89a1deb46b6296be2e7b8012, type: 3}
   m_PrefabInstance: {fileID: 1748549856017602859}
   m_PrefabAsset: {fileID: 0}
---- !u!61 &2125548186 stripped
-BoxCollider2D:
-  m_CorrespondingSourceObject: {fileID: 7155408653194853416, guid: d2063d7f941f7554ead562577c91db70, type: 3}
-  m_PrefabInstance: {fileID: 7155408652497467058}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &2135970382
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -18523,12 +18507,28 @@ PrefabInstance:
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 713898024}
-    - target: {fileID: 1748549855603490952, guid: 4b85c9bb89a1deb46b6296be2e7b8012, type: 3}
-      propertyPath: m_AnchorMax.x
+    - target: {fileID: 1748549855769966430, guid: 4b85c9bb89a1deb46b6296be2e7b8012, type: 3}
+      propertyPath: m_AnchorMax.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 1748549855603490952, guid: 4b85c9bb89a1deb46b6296be2e7b8012, type: 3}
-      propertyPath: m_AnchorMax.y
+    - target: {fileID: 1748549855769966430, guid: 4b85c9bb89a1deb46b6296be2e7b8012, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1748549855769966430, guid: 4b85c9bb89a1deb46b6296be2e7b8012, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1748549855769966430, guid: 4b85c9bb89a1deb46b6296be2e7b8012, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1748549855769966430, guid: 4b85c9bb89a1deb46b6296be2e7b8012, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1748549855769966430, guid: 4b85c9bb89a1deb46b6296be2e7b8012, type: 3}
+      propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1748549855795942517, guid: 4b85c9bb89a1deb46b6296be2e7b8012, type: 3}
@@ -19230,14 +19230,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Ladder
       objectReference: {fileID: 0}
-    - target: {fileID: 7155408652689040673, guid: d2063d7f941f7554ead562577c91db70, type: 3}
-      propertyPath: interactUI
-      value: 
-      objectReference: {fileID: 2004874043}
-    - target: {fileID: 7155408652689040673, guid: d2063d7f941f7554ead562577c91db70, type: 3}
-      propertyPath: topCollider2D
-      value: 
-      objectReference: {fileID: 2125548186}
     - target: {fileID: 7155408652689040679, guid: d2063d7f941f7554ead562577c91db70, type: 3}
       propertyPath: m_RootOrder
       value: 10

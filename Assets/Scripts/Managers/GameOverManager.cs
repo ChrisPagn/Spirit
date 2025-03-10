@@ -2,15 +2,23 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 
 /// <summary>
-/// Gestion du Menu GameOver (Mort du joueur)
+/// Gère l'affichage et les actions du menu Game Over lorsque le joueur meurt.
 /// </summary>
 public class GameOverManager : MonoBehaviour
 {
-
+    /// <summary>
+    /// Interface utilisateur du menu Game Over.
+    /// </summary>
     public GameObject gameOverUI;
 
+    /// <summary>
+    /// Instance unique de GameOverManager (Singleton).
+    /// </summary>
     public static GameOverManager instance;
 
+    /// <summary>
+    /// Initialise l'instance unique de GameOverManager.
+    /// </summary>
     private void Awake()
     {
         if (instance != null)
@@ -22,27 +30,30 @@ public class GameOverManager : MonoBehaviour
         instance = this;
     }
 
+    /// <summary>
+    /// Affiche le menu Game Over lorsque le joueur meurt.
+    /// </summary>
     public void OnPlayerDeath()
     {
         gameOverUI.SetActive(true);
     }
 
     /// <summary>
-    /// Methode pour recommencer le niveau
+    /// Recommence le niveau actuel en réinitialisant les paramètres du joueur.
     /// </summary>
     public void RetryButton()
     {
         Inventory.instance.RemoveCoins(CurrentSceneManager.instance.coinsPickedUpInThisSceneCount);
-        //recharge la scene
+        // Recharge la scène
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
-        //replace le joueur au spawn
+        // Replace le joueur au point de réapparition
         PlayerHealth.instance.Respawn();
-        //reactive les mouvements du joueur + lui rendre sa vie
+        // Réactive les mouvements du joueur et restaure sa vie
         gameOverUI.SetActive(false);
     }
 
     /// <summary>
-    /// Methode pour retourner au menu principal
+    /// Retourne au menu principal.
     /// </summary>
     public void MainMenuButton()
     {
@@ -50,7 +61,7 @@ public class GameOverManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Methode pour fermer le jeu
+    /// Ferme le jeu.
     /// </summary>
     public void QuitButton()
     {

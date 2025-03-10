@@ -1,13 +1,23 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
+
+/// <summary>
+/// Gère le menu principal du jeu, permettant de lancer le jeu, d'accéder aux paramètres, de quitter le jeu et de charger la scène des crédits.
+/// </summary>
 public class MainMenu : MonoBehaviour
 {
+    /// <summary>
+    /// Nom de la scène à charger lorsque le jeu commence.
+    /// </summary>
     public string levelToLoad;
 
+    /// <summary>
+    /// Fenêtre des paramètres du jeu.
+    /// </summary>
     public GameObject settingsWindow;
 
     /// <summary>
-    /// Methode pour lancer le jeu
+    /// Lance le jeu en chargeant la scène spécifiée par levelToLoad.
     /// </summary>
     public void StartGameButton()
     {
@@ -15,7 +25,7 @@ public class MainMenu : MonoBehaviour
     }
 
     /// <summary>
-    /// Methode pour aller aux parametres de jeu
+    /// Ouvre la fenêtre des paramètres du jeu.
     /// </summary>
     public void SettingsButton()
     {
@@ -23,7 +33,7 @@ public class MainMenu : MonoBehaviour
     }
 
     /// <summary>
-    /// Methode pour fermer la fenetre settingswindow
+    /// Ferme la fenêtre des paramètres du jeu.
     /// </summary>
     public void CloseSettingsWindows()
     {
@@ -31,7 +41,7 @@ public class MainMenu : MonoBehaviour
     }
 
     /// <summary>
-    /// Methode pour fermer le jeu
+    /// Ferme le jeu.
     /// </summary>
     public void QuitGameButton()
     {
@@ -39,11 +49,10 @@ public class MainMenu : MonoBehaviour
     }
 
     /// <summary>
-    /// Methode pour charger la scene credits
+    /// Charge la scène des crédits.
     /// </summary>
     public void LoadSceneCredits()
     {
         SceneManager.LoadScene("Credits");
     }
-
 }

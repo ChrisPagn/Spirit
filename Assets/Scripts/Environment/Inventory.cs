@@ -4,57 +4,86 @@ using UnityEngine.UI;
 using TMPro;
 
 /// <summary>
-/// Ce script gère l'inventaire, plus précisément le compteur de pièces du joueur, 
-/// et met à jour l'interface utilisateur en conséquence.
+/// Gère l'inventaire du joueur, y compris le compteur de pièces et l'interface utilisateur associée.
 /// </summary>
 public class Inventory : MonoBehaviour
 {
-    // Nombre actuel de pièces
+    /// <summary>
+    /// Nombre actuel de pièces dans l'inventaire.
+    /// </summary>
     public int coinsCount;
 
-    // Texte standard pour afficher le nombre de pièces dans l'interface utilisateur (UnityEngine.UI)
+    /// <summary>
+    /// Texte standard (UnityEngine.UI) pour afficher le nombre de pièces dans l'interface utilisateur.
+    /// </summary>
     public Text coinsCountText;
 
+    /// <summary>
+    /// Liste des objets contenus dans l'inventaire.
+    /// </summary>
     public List<Item> contentItems = new List<Item>();
+
+    /// <summary>
+    /// Index de l'objet actuellement sélectionné dans l'inventaire.
+    /// </summary>
     private int contentCurrentIndex = 0;
+
+    /// <summary>
+    /// Image de l'objet actuellement sélectionné dans l'interface utilisateur.
+    /// </summary>
     public Image itemImageUI;
+
+    /// <summary>
+    /// Image affichée lorsque l'inventaire est vide.
+    /// </summary>
     public Sprite emptyItemImage;
+
+    /// <summary>
+    /// Texte (TextMeshPro) pour afficher le nom de l'objet actuellement sélectionné dans l'interface utilisateur.
+    /// </summary>
     public TextMeshProUGUI itemNameUI;
 
-    // Texte pour TextMeshPro pour afficher le nombre de pièces dans l'interface utilisateur (TMPro)
+    /// <summary>
+    /// Texte (TextMeshPro) pour afficher le nombre de pièces dans l'interface utilisateur.
+    /// </summary>
     public TMP_Text coinsText;
 
+    /// <summary>
+    /// Référence aux effets du joueur pour appliquer les effets des objets consommés.
+    /// </summary>
     public PlayerEffects playerEffects;
 
-    // Instance Singleton de l'inventaire
+    /// <summary>
+    /// Instance unique de l'inventaire (Singleton).
+    /// </summary>
     public static Inventory instance;
 
     /// <summary>
-    /// La méthode Awake est appelée lorsque le script est chargé pour la première fois. 
-    /// Elle initialise le Singleton de l'inventaire.
+    /// Initialise l'instance unique de l'inventaire.
     /// </summary>
     private void Awake()
     {
-        // Vérifie si une autre instance d'Inventory existe déjà
         if (instance != null)
         {
-            // Avertissement dans la console Unity si plus d'une instance est présente
             Debug.LogWarning("Il y a plus d'une instance de Inventory dans la scène!");
-
-            // Supprime cette instance supplémentaire pour maintenir le modèle Singleton
             Destroy(gameObject);
             return;
         }
 
-        // Assigne cette instance comme étant l'instance unique (Singleton)
         instance = this;
     }
 
+    /// <summary>
+    /// Met à jour l'interface utilisateur de l'inventaire au démarrage.
+    /// </summary>
     public void Start()
     {
         UpdateInventoryUI();
     }
 
+    /// <summary>
+    /// Consomme l'objet actuellement sélectionné dans l'inventaire, applique ses effets, et le retire de l'inventaire.
+    /// </summary>
     public void ConsumeItem()
     {
         if (contentItems.Count == 0)
@@ -63,12 +92,15 @@ public class Inventory : MonoBehaviour
         }
         Item currentItem = contentItems[contentCurrentIndex];
         PlayerHealth.instance.HealPlayer(currentItem.hpGiven);
-        playerEffects.AddSpeed(currentItem.speedGiven, currentItem.speedDuration);  
+        playerEffects.AddSpeed(currentItem.speedGiven, currentItem.speedDuration);
         contentItems.Remove(currentItem);
         GetNextItem();
         UpdateInventoryUI();
     }
 
+    /// <summary>
+    /// Sélectionne l'objet suivant dans l'inventaire.
+    /// </summary>
     public void GetNextItem()
     {
         if (contentItems.Count == 0)
@@ -83,6 +115,9 @@ public class Inventory : MonoBehaviour
         UpdateInventoryUI();
     }
 
+    /// <summary>
+    /// Sélectionne l'objet précédent dans l'inventaire.
+    /// </summary>
     public void GetPreviousItem()
     {
         contentCurrentIndex--;
@@ -93,6 +128,9 @@ public class Inventory : MonoBehaviour
         UpdateInventoryUI();
     }
 
+    /// <summary>
+    /// Met à jour l'interface utilisateur pour refléter l'état actuel de l'inventaire.
+    /// </summary>
     public void UpdateInventoryUI()
     {
         if (contentItems.Count > 0)
@@ -108,51 +146,37 @@ public class Inventory : MonoBehaviour
     }
 
     /// <summary>
-    /// Méthode pour ajouter un certain nombre de pièces à l'inventaire et mettre à jour l'interface utilisateur.
+    /// Ajoute un certain nombre de pièces à l'inventaire et met à jour l'interface utilisateur.
     /// </summary>
-    /// <param name="count">Le nombre de pièces à ajouter</param>
+    /// <param name="count">Le nombre de pièces à ajouter.</param>
     public void AddCoins(int count)
     {
-        // Augmente le compteur de pièces
         coinsCount += count;
-
-        // Si un texte standard (UnityEngine.UI) est assigné, met à jour son affichage avec le nouveau nombre de pièces
-        if (coinsCountText != null)
-        {
-               UpdateTextUI();
-        }
-
-        // Si un texte TextMeshPro est assigné, met à jour son affichage avec le nouveau nombre de pièces
-        if (coinsText != null)
-        {
-               UpdateTextUI();
-        }
+        UpdateTextUI();
     }
 
     /// <summary>
-    /// Méthode pour retirer un certain nombre de pièces de l'inventaire et mettre à jour l'interface utilisateur.
+    /// Retire un certain nombre de pièces de l'inventaire et met à jour l'interface utilisateur.
     /// </summary>
-    /// <param name="count">Le nombre de pièces à retirer</param>
+    /// <param name="count">Le nombre de pièces à retirer.</param>
     public void RemoveCoins(int count)
     {
-        // Diminue le compteur de pièces
         coinsCount -= count;
-
-        // Si un texte standard (UnityEngine.UI) est assigné, met à jour son affichage avec le nouveau nombre de pièces
-        if (coinsCountText != null)
-        {
-               UpdateTextUI();
-          }
-
-        // Si un texte TextMeshPro est assigné, met à jour son affichage avec le nouveau nombre de pièces
-        if (coinsText != null)
-        {
-               UpdateTextUI();
-        }
+        UpdateTextUI();
     }
 
-     public void UpdateTextUI()
-     {
-          coinsText.text = coinsCount.ToString();
-     }
+    /// <summary>
+    /// Met à jour le texte de l'interface utilisateur pour refléter le nombre actuel de pièces.
+    /// </summary>
+    public void UpdateTextUI()
+    {
+        if (coinsText != null)
+        {
+            coinsText.text = coinsCount.ToString();
+        }
+        if (coinsCountText != null)
+        {
+            coinsCountText.text = coinsCount.ToString();
+        }
+    }
 }

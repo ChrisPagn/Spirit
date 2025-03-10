@@ -8,32 +8,59 @@ using UnityEngine;
 /// </summary>
 public class PlayerHealth : MonoBehaviour
 {
-    // La santé maximale du joueur
+    /// <summary>
+    /// La santé maximale du joueur.
+    /// </summary>
     public int maxHealth = 100;
 
-    // La santé actuelle du joueur
+    /// <summary>
+    /// La santé actuelle du joueur.
+    /// </summary>
     public int currentHealth;
 
-    // Délai entre les flashs du sprite lors de l'invincibilité (en secondes)
+    /// <summary>
+    /// Délai entre les flashs du sprite lors de l'invincibilité (en secondes).
+    /// </summary>
     public float invincibilityFlashDelay = 0.2f;
 
-    // Temps d'invincibilité après avoir pris des dégâts (en secondes)
+    /// <summary>
+    /// Temps d'invincibilité après avoir pris des dégâts (en secondes).
+    /// </summary>
     public float invincibilityTimeAfterHit = 3f;
 
-    // Booléen pour vérifier si le joueur est actuellement invincible
+    /// <summary>
+    /// Indique si le joueur est actuellement invincible.
+    /// </summary>
     public bool isInvincible = false;
 
-    // Référence à la barre de vie du joueur (script HealthBar)
+    /// <summary>
+    /// Référence à la barre de vie du joueur.
+    /// </summary>
     public HealthBar healthBar;
 
-    // Référence au SpriteRenderer pour rendre le joueur clignotant lorsqu'il est invincible
+    /// <summary>
+    /// Référence au SpriteRenderer pour rendre le joueur clignotant lorsqu'il est invincible.
+    /// </summary>
     public SpriteRenderer graphics;
 
+    /// <summary>
+    /// Instance statique pour gérer l'accès global à PlayerHealth.
+    /// </summary>
     public static PlayerHealth instance;
 
+    /// <summary>
+    /// Source audio du joueur.
+    /// </summary>
     public AudioSource audioSource;
+
+    /// <summary>
+    /// Son joué lorsque le joueur prend des dégâts.
+    /// </summary>
     public AudioClip sound;
 
+    /// <summary>
+    /// S'exécute avant le Start, initialise l'instance unique de PlayerHealth.
+    /// </summary>
     private void Awake()
     {
         if (instance != null)
@@ -41,17 +68,15 @@ public class PlayerHealth : MonoBehaviour
             Debug.LogWarning("Il y a plus d'une instance PlayerHealth dans la scène");
             return;
         }
-
         instance = this;
     }
 
-    // Start est appelé au début du jeu
+    /// <summary>
+    /// Initialise les valeurs de santé et met à jour la barre de vie au démarrage du jeu.
+    /// </summary>
     void Start()
     {
-        // Initialisation de la santé actuelle au maximum
         currentHealth = maxHealth;
-
-        // Initialisation de la barre de vie avec la valeur maximale de santé
         if (healthBar != null)
         {
             healthBar.SetMaxHealth(maxHealth);
@@ -62,20 +87,21 @@ public class PlayerHealth : MonoBehaviour
         }
     }
 
-    // Update est appelé à chaque frame
+    /// <summary>
+    /// Vérifie les entrées utilisateur chaque frame, notamment pour tester la prise de dégâts.
+    /// </summary>
     void Update()
     {
-        // Test de prise de dégâts avec la touche H (pour les tests en développement)
         if (Input.GetKeyDown(KeyCode.H))
         {
-            TakeDamage(40); // Réduit la santé de X si on appuie sur H
+            TakeDamage(40);
         }
     }
 
     /// <summary>
-    /// Méthode appelée lorsque le joueur reprend de la vie.
+    /// Ajoute de la santé au joueur.
     /// </summary>
-    /// <param name="amount">Quantité de récupération de vie au joueur.</param>
+    /// <param name="amount">Quantité de points de vie à ajouter.</param>
     public void HealPlayer(int amount)
     {
         currentHealth += amount;
@@ -86,58 +112,40 @@ public class PlayerHealth : MonoBehaviour
     }
 
     /// <summary>
-    /// Méthode appelée lorsque le joueur prend des dégâts.
+    /// Réduit la santé du joueur en fonction des dégâts subis.
     /// </summary>
     /// <param name="damage">Quantité de dégâts infligés au joueur.</param>
     public void TakeDamage(int damage)
     {
-        // Si le joueur n'est pas invincible, il peut subir des dégâts
         if (!isInvincible)
         {
             audioSource.PlayOneShot(sound);
-
-            // Réduction de la santé
             currentHealth -= damage;
-
-            // Mise à jour de la barre de vie
             if (healthBar != null)
             {
                 healthBar.SetHealth(currentHealth);
             }
-
-            // Vérifie si le joueur est toujours vivant
             if (currentHealth <= 0)
             {
                 Die();
                 return;
             }
-
-            // Activer l'invincibilité pour empêcher d'autres dégâts
             isInvincible = true;
-
-            // Lancer les coroutines pour l'animation de flash et la gestion du délai d'invincibilité
             StartCoroutine(InvincibiltyFlash());
             StartCoroutine(HandleInvincibilityDealy());
         }
     }
 
     /// <summary>
-    /// Méthode pour la mort du joueur
+    /// Gère la mort du joueur.
     /// </summary>
     public void Die()
     {
         Debug.Log("Le joueur est éliminé");
-
-        // Vérifie que l'instance de PlayerMovement n'est pas null
         if (PlayerMovement.instance != null)
         {
-            // Bloquer les mouvements du personnage (passage de l'instance singleton à false)
             PlayerMovement.instance.enabled = false;
-
-            // Jouer l'animation d'élimination en passant par le singleton => animation die
             PlayerMovement.instance.animator.SetTrigger("Die");
-
-            // Empêcher les interactions physiques avec les autres éléments de la scène
             PlayerMovement.instance.rigidbody.bodyType = RigidbodyType2D.Kinematic;
             PlayerMovement.instance.rigidbody.velocity = Vector2.zero;
             PlayerMovement.instance.playerCollider.enabled = false;
@@ -146,8 +154,6 @@ public class PlayerHealth : MonoBehaviour
         {
             Debug.LogError("L'instance de PlayerMovement est null.");
         }
-
-        // Affichage du menu gameOver
         if (GameOverManager.instance != null)
         {
             GameOverManager.instance.OnPlayerDeath();
@@ -158,24 +164,18 @@ public class PlayerHealth : MonoBehaviour
         }
     }
 
-
+    /// <summary>
+    /// Réinitialise la position et la santé du joueur après une mort.
+    /// </summary>
     public void Respawn()
     {
         Debug.Log("Le joueur est replacé au début");
-
-        // Vérifie que l'instance de PlayerMovement n'est pas null
         if (PlayerMovement.instance != null)
         {
-            // Activer les mouvements du personnage (passage de l'instance singleton à true)
             PlayerMovement.instance.enabled = true;
-
-            // Jouer l'animation d'élimination en passant par le singleton => animation die
             PlayerMovement.instance.animator.SetTrigger("Respawn");
-
-            // Empêcher les interactions physiques avec les autres éléments de la scène
             PlayerMovement.instance.rigidbody.bodyType = RigidbodyType2D.Dynamic;
             PlayerMovement.instance.playerCollider.enabled = true;
-            // chargement de la vie du joueur
             currentHealth = maxHealth;
             healthBar.SetHealth(currentHealth);
         }
@@ -183,23 +183,17 @@ public class PlayerHealth : MonoBehaviour
         {
             Debug.LogError("L'instance de PlayerMovement est null.");
         }
-
-        
     }
 
     /// <summary>
-    /// Coroutine qui fait clignoter le sprite du joueur pour indiquer l'invincibilité.
+    /// Coroutine qui fait clignoter le sprite du joueur pour signaler l'invincibilité.
     /// </summary>
     public IEnumerator InvincibiltyFlash()
     {
-        // Tant que le joueur est invincible, alterner la visibilité du sprite
         while (isInvincible)
         {
-            // Rendre le sprite invisible
             graphics.color = new Color(1f, 1f, 1f, 0);
             yield return new WaitForSeconds(invincibilityFlashDelay);
-
-            // Rendre le sprite visible
             graphics.color = new Color(1f, 1f, 1f, 1f);
             yield return new WaitForSeconds(invincibilityFlashDelay);
         }
@@ -210,10 +204,7 @@ public class PlayerHealth : MonoBehaviour
     /// </summary>
     public IEnumerator HandleInvincibilityDealy()
     {
-        // Attendre la fin de la période d'invincibilité
         yield return new WaitForSeconds(invincibilityTimeAfterHit);
-
-        // Désactiver l'invincibilité pour que le joueur puisse à nouveau subir des dégâts
         isInvincible = false;
     }
 }
