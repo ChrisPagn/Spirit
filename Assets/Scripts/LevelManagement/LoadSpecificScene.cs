@@ -77,7 +77,7 @@ public class LoadSpecificScene : MonoBehaviour
 
         //sauvegarde des données
         LoadAndSaveData.instance.SaveData();
-        Debug.LogWarning("Données suavegardées au passage de niveau");
+        Debug.LogWarning("Données sauvegardées au passage de niveau");
 
 
         // Déclencher l'animation de fondu via l'Animator

@@ -1,80 +1,166 @@
+using System;
+using System.IO;
 using System.Linq;
-using System.Net.Sockets;
-using Unity.VisualScripting;
+using System.Collections.Generic;
+using System.Security.Cryptography;
+using System.Text;
+using Newtonsoft.Json;
 using UnityEngine;
 
-/// <summary>
-/// Gère le chargement et la sauvegarde des données de jeu en local.
-/// </summary>
 public class LoadAndSaveData : MonoBehaviour
 {
-    /// <summary>
-    /// Instance unique de la classe LoadAndSaveData.
-    /// </summary>
     public static LoadAndSaveData instance;
 
-    /// <summary>
-    /// Initialise l'instance unique de LoadAndSaveData.
-    /// </summary>
+    private string filePath;
+    private string encryptionKey = "YourEncryptionKeyHere"; // Remplacez par une clé sécurisée
+
     private void Awake()
     {
-        if (instance != null)
+        if (instance != null && instance != this)
         {
-            Debug.LogWarning("Il y a plus d'une instance LoadAndSaveData dans la scène");
+            Destroy(gameObject);
             return;
         }
 
         instance = this;
+        filePath = Path.Combine(Application.persistentDataPath, "saveData.json");
+
+        // Si on veut que l'objet persiste entre les scènes :
+        DontDestroyOnLoad(gameObject);
     }
 
-    /// <summary>
-    /// Charge les données sauvegardées au démarrage du jeu.
-    /// </summary>
     void Start()
     {
-        // Charge le nombre de pièces depuis PlayerPrefs
-        // PlayerPrefs stocke les données en local sur le disque de l'utilisateur
-        // Les données sont stockées dans un fichier de registre sur Windows ou un fichier .plist sur macOS
-        Inventory.instance.coinsCount = PlayerPrefs.GetInt("coinsCount", 0);
-        Inventory.instance.UpdateTextUI();
-
-        // Charge les objets sauvegardés dans l'inventaire
-        string[] itemsSaved = PlayerPrefs.GetString("inventoryItems", "").Split(',');
-
-        for (int i = 0; i < itemsSaved.Length; i++)
-        {
-            if (itemsSaved[i] != "")
-            {
-                int id = int.Parse(itemsSaved[i]);
-                Item currentItem = ItemsDataBase.instance.allItems.Single(x => x.id == id);
-                Inventory.instance.contentItems.Add(currentItem);
-            }
-        }
-
-        Inventory.instance.UpdateInventoryUI();
+        LoadData();
     }
 
-    /// <summary>
-    /// Sauvegarde les données actuelles du jeu.
-    /// </summary>
     public void SaveData()
     {
-        // Sauvegarde le nombre de pièces dans PlayerPrefs
-        // Les données sont sauvegardées en local sur le disque de l'utilisateur
-        PlayerPrefs.SetInt("coinsCount", Inventory.instance.coinsCount);
-
-        // Sauvegarde le niveau atteint
-        if (CurrentSceneManager.instance.levelToUnlock > PlayerPrefs.GetInt("levelReached", 1))
+        var saveData = new SaveData
         {
-            PlayerPrefs.SetInt("levelReached", CurrentSceneManager.instance.levelToUnlock);
-        }
+            CoinsCount = Inventory.instance.coinsCount,
+            LevelReached = CurrentSceneManager.instance.levelToUnlock,
+            InventoryItems = Inventory.instance.contentItems.ConvertAll(item => item.id)
+        };
 
-        // Sauvegarde les objets dans l'inventaire
-        // Les données sont converties en une chaîne de caractères séparée par des virgules
-        string itemsInInventory = string.Join(",", Inventory.instance.contentItems.Select(x => x.id));
-        PlayerPrefs.SetString("inventoryItems", itemsInInventory);
+        try
+        {
+            string json = JsonConvert.SerializeObject(saveData);
+            string encryptedJson = EncryptString(json, encryptionKey);
+            File.WriteAllText(filePath, encryptedJson);
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError($"Erreur lors de la sauvegarde des données : {ex.Message}");
+        }
     }
+
+    private void LoadData()
+    {
+        if (File.Exists(filePath))
+        {
+            try
+            {
+                string encryptedJson = File.ReadAllText(filePath);
+                string json = DecryptString(encryptedJson, encryptionKey);
+                SaveData saveData = JsonConvert.DeserializeObject<SaveData>(json);
+
+                if (saveData != null)
+                {
+                    Inventory.instance.coinsCount = saveData.CoinsCount;
+                    Inventory.instance.UpdateTextUI();
+
+                    foreach (int id in saveData.InventoryItems)
+                    {
+                        Item currentItem = ItemsDataBase.instance.allItems.FirstOrDefault(x => x.id == id);
+                        if (currentItem != null)
+                        {
+                            Inventory.instance.contentItems.Add(currentItem);
+                        }
+                    }
+
+                    Inventory.instance.UpdateInventoryUI();
+                    CurrentSceneManager.instance.levelToUnlock = saveData.LevelReached;
+                }
+                else
+                {
+                    Debug.LogWarning("Les données sauvegardées sont corrompues ou invalides.");
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"Erreur lors du chargement des données : {ex.Message}");
+            }
+        }
+    }
+
+    private string EncryptString(string plainText, string key)
+    {
+        using (Aes aes = Aes.Create())
+        {
+            // Génération d'une clé sécurisée avec un sel pour éviter les attaques par dictionnaire
+            byte[] salt = Encoding.UTF8.GetBytes("SaltValue1234");
+            aes.Key = new Rfc2898DeriveBytes(key, salt, 10000).GetBytes(32);
+            aes.GenerateIV(); // IV aléatoire
+
+            using (MemoryStream memoryStream = new MemoryStream())
+            {
+                memoryStream.Write(aes.IV, 0, aes.IV.Length);
+
+                using (CryptoStream cryptoStream = new CryptoStream(memoryStream, aes.CreateEncryptor(), CryptoStreamMode.Write))
+                using (StreamWriter streamWriter = new StreamWriter(cryptoStream))
+                {
+                    streamWriter.Write(plainText);
+                }
+
+                return Convert.ToBase64String(memoryStream.ToArray());
+            }
+        }
+    }
+
+    private string DecryptString(string cipherText, string key)
+    {
+        try
+        {
+            byte[] fullCipher = Convert.FromBase64String(cipherText);
+
+            using (Aes aes = Aes.Create())
+            {
+                byte[] salt = Encoding.UTF8.GetBytes("SaltValue1234");
+                aes.Key = new Rfc2898DeriveBytes(key, salt, 10000).GetBytes(32);
+
+                byte[] iv = new byte[aes.BlockSize / 8];
+                byte[] cipher = new byte[fullCipher.Length - iv.Length];
+
+                Array.Copy(fullCipher, iv, iv.Length);
+                Array.Copy(fullCipher, iv.Length, cipher, 0, cipher.Length);
+
+                aes.IV = iv;
+
+                using (MemoryStream memoryStream = new MemoryStream(cipher))
+                using (CryptoStream cryptoStream = new CryptoStream(memoryStream, aes.CreateDecryptor(), CryptoStreamMode.Read))
+                using (StreamReader streamReader = new StreamReader(cryptoStream))
+                {
+                    return streamReader.ReadToEnd();
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError($"Erreur de déchiffrement : {ex.Message}");
+            return null;
+        }
+    }
+
+    
 }
+
+
+
+
+
+
+
 
 //*********************
 //Aide mémoire
@@ -85,8 +171,9 @@ public class LoadAndSaveData : MonoBehaviour
 
 //        Fonctionnement de PlayerPrefs:
 //        Stockage Local : PlayerPrefs stocke les données en local sur le disque de l'utilisateur.
-//                          Sur Windows, les données sont stockées dans le registre, tandis que sur macOS,
-//                          elles sont stockées dans un fichier .plist.
+//                          Sur Windows, les données sont stockées dans le registre,
+//                              cmd :Windows + r ==>> taper " regedit "
+//                          tandis que sur macOS, elles sont stockées dans un fichier .plist.
 
 //        Persistance: Les données sauvegardées avec PlayerPrefs persistent entre les sessions de jeu,
 //                      ce qui signifie qu'elles ne sont pas perdues lorsque le jeu est fermé.

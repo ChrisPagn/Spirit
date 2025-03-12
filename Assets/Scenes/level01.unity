@@ -18247,6 +18247,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Player
       objectReference: {fileID: 0}
+    - target: {fileID: 238012915355162493, guid: d1f6b28455b7c184c8b973b61f92b43f, type: 3}
+      propertyPath: jumpForce
+      value: 6.5
+      objectReference: {fileID: 0}
     - target: {fileID: 238012915355162495, guid: d1f6b28455b7c184c8b973b61f92b43f, type: 3}
       propertyPath: m_RootOrder
       value: 13
@@ -18499,6 +18503,10 @@ PrefabInstance:
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 4486263411949041502}
+    - target: {fileID: 1748549855018238474, guid: 4b85c9bb89a1deb46b6296be2e7b8012, type: 3}
+      propertyPath: m_Name
+      value: IntarctUICheckPoint
+      objectReference: {fileID: 0}
     - target: {fileID: 1748549855225623662, guid: 4b85c9bb89a1deb46b6296be2e7b8012, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
@@ -18507,6 +18515,14 @@ PrefabInstance:
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 713898024}
+    - target: {fileID: 1748549855603490952, guid: 4b85c9bb89a1deb46b6296be2e7b8012, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1748549855603490952, guid: 4b85c9bb89a1deb46b6296be2e7b8012, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1748549855769966430, guid: 4b85c9bb89a1deb46b6296be2e7b8012, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0

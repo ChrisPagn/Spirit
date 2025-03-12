@@ -161,6 +161,12 @@ public class PlayerMovement : MonoBehaviour
     {
         isGrounded = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, collinsionLayers);
 
+        // Réinitialiser isJumping si le joueur n'est plus au sol
+        if (!isGrounded)
+        {
+            isJumping = false;
+        }
+
         // Si le joueur n'est pas en train de grimper, on applique un mouvement horizontal classique
         if (!isClimbing)
         {
@@ -172,14 +178,15 @@ public class PlayerMovement : MonoBehaviour
             // Si le joueur est en train de grimper, il ne peut se déplacer que verticalement
             MovePlayer(0, verticalMovement);
         }
+
         // Si le joueur touche le sol et que l'état isJumping est encore actif
         if (isGrounded && isJumping)
         {
             // Ajoute un léger délai pour éviter une réinitialisation instantanée
             StartCoroutine(ResetJumpAfterLanding());
         }
-
     }
+
 
     /// <summary>
     /// Coroutine qui attend que le joueur touche le sol avant de réinitialiser l'état de saut.
@@ -192,7 +199,7 @@ public class PlayerMovement : MonoBehaviour
         Debug.Log($"ResetJumpAfterLanding(): isGrounded: {isGrounded}");
 
         // Une fois au sol, attendre un très court délai pour stabiliser le contact
-        // yield return new WaitForSeconds(0.1f); // Ajustez ce délai si nécessaire
+        yield return new WaitForSeconds(0.1f); // Ajustez ce délai si nécessaire
 
         // Vérifiez à nouveau si le joueur est bien au sol avant de réinitialiser isJumping
         if (isGrounded) // Correction ici : on veut réinitialiser seulement si le joueur EST au sol
