@@ -47,6 +47,8 @@ public class LoadSpecificScene : MonoBehaviour
         {
             Debug.LogError($"L'objet {fadeObject.name} a été trouvé mais il ne contient pas d'Animator !");
         }
+        ////chargement des données
+        //LoadAndSaveData.instance.LoadData();
     }
 
 

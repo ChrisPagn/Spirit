@@ -7,6 +7,9 @@ using System.Text;
 using Newtonsoft.Json;
 using UnityEngine;
 
+/// <summary>
+/// Classe responsable de la sauvegarde et du chargement des données de jeu.
+/// </summary>
 public class LoadAndSaveData : MonoBehaviour
 {
     public static LoadAndSaveData instance;
@@ -14,28 +17,48 @@ public class LoadAndSaveData : MonoBehaviour
     private string filePath;
     private string encryptionKey = "YourEncryptionKeyHere"; // Remplacez par une clé sécurisée
 
+    /// <summary>
+    /// Initialise l'instance singleton et définit le chemin du fichier de sauvegarde.
+    /// </summary>
     private void Awake()
     {
+        // Vérifie s'il existe déjà une instance de cette classe.
         if (instance != null && instance != this)
         {
+            // Si une instance existe déjà, détruit l'objet actuel pour éviter les duplications.
             Destroy(gameObject);
             return;
         }
 
+        // Définit l'instance actuelle comme étant l'instance unique.
         instance = this;
+
+        // Définit le chemin où le fichier de sauvegarde sera stocké.
         filePath = Path.Combine(Application.persistentDataPath, "saveData.json");
 
-        // Si on veut que l'objet persiste entre les scènes :
-        DontDestroyOnLoad(gameObject);
+        // Si on veut que l'objet persiste entre les scènes, décommentez la ligne suivante :
+        // DontDestroyOnLoad(gameObject);
     }
 
+    /// <summary>
+    /// Charge les données sauvegardées lorsque le jeu commence.
+    /// </summary>
     void Start()
     {
+        // Affiche le chemin du fichier de sauvegarde pour le débogage.
+        // C:/Users/Chris/AppData/LocalLow/DefaultCompany/Spirit\saveData.json
+        Debug.Log("Chemin du fichier de sauvegarde : " + filePath);
+
+        // Charge les données sauvegardées.
         LoadData();
     }
 
+    /// <summary>
+    /// Sauvegarde les données actuelles du jeu dans un fichier.
+    /// </summary>
     public void SaveData()
     {
+        // Crée un objet SaveData contenant les données à sauvegarder.
         var saveData = new SaveData
         {
             CoinsCount = Inventory.instance.coinsCount,
@@ -45,31 +68,48 @@ public class LoadAndSaveData : MonoBehaviour
 
         try
         {
+            // Convertit les données en JSON.
             string json = JsonConvert.SerializeObject(saveData);
+
+            // Chiffre le JSON.
             string encryptedJson = EncryptString(json, encryptionKey);
+
+            // Écrit le JSON chiffré dans le fichier.
             File.WriteAllText(filePath, encryptedJson);
         }
         catch (Exception ex)
         {
+            // Affiche une erreur si la sauvegarde échoue.
             Debug.LogError($"Erreur lors de la sauvegarde des données : {ex.Message}");
         }
     }
 
+    /// <summary>
+    /// Charge les données sauvegardées à partir du fichier.
+    /// </summary>
     private void LoadData()
     {
+        // Vérifie si le fichier de sauvegarde existe.
         if (File.Exists(filePath))
         {
             try
             {
+                // Lit le contenu chiffré du fichier.
                 string encryptedJson = File.ReadAllText(filePath);
+
+                // Déchiffre le contenu.
                 string json = DecryptString(encryptedJson, encryptionKey);
+
+                // Désérialise le JSON en un objet SaveData.
                 SaveData saveData = JsonConvert.DeserializeObject<SaveData>(json);
 
+                // Si les données sont valides, met à jour les composants du jeu.
                 if (saveData != null)
                 {
                     Inventory.instance.coinsCount = saveData.CoinsCount;
                     Inventory.instance.UpdateTextUI();
 
+                    // Ajoute les éléments d'inventaire sauvegardés.
                     foreach (int id in saveData.InventoryItems)
                     {
                         Item currentItem = ItemsDataBase.instance.allItems.FirstOrDefault(x => x.id == id);
@@ -84,44 +124,64 @@ public class LoadAndSaveData : MonoBehaviour
                 }
                 else
                 {
+                    // Affiche un avertissement si les données sont corrompues.
                     Debug.LogWarning("Les données sauvegardées sont corrompues ou invalides.");
                 }
             }
             catch (Exception ex)
             {
+                // Affiche une erreur si le chargement échoue.
                 Debug.LogError($"Erreur lors du chargement des données : {ex.Message}");
             }
         }
     }
 
+    /// <summary>
+    /// Chiffre une chaîne de texte en utilisant une clé de chiffrement.
+    /// </summary>
+    /// <param name="plainText">Texte à chiffrer.</param>
+    /// <param name="key">Clé de chiffrement.</param>
+    /// <returns>Texte chiffré.</returns>
     private string EncryptString(string plainText, string key)
     {
         using (Aes aes = Aes.Create())
         {
-            // Génération d'une clé sécurisée avec un sel pour éviter les attaques par dictionnaire
+            // Utilise un sel pour générer une clé sécurisée.
             byte[] salt = Encoding.UTF8.GetBytes("SaltValue1234");
             aes.Key = new Rfc2898DeriveBytes(key, salt, 10000).GetBytes(32);
-            aes.GenerateIV(); // IV aléatoire
+
+            // Génère un vecteur d'initialisation (IV) aléatoire.
+            aes.GenerateIV();
 
             using (MemoryStream memoryStream = new MemoryStream())
             {
+                // Écrit l'IV au début du flux.
                 memoryStream.Write(aes.IV, 0, aes.IV.Length);
 
+                // Chiffre le texte et l'écrit dans le flux.
                 using (CryptoStream cryptoStream = new CryptoStream(memoryStream, aes.CreateEncryptor(), CryptoStreamMode.Write))
                 using (StreamWriter streamWriter = new StreamWriter(cryptoStream))
                 {
                     streamWriter.Write(plainText);
                 }
 
+                // Retourne le texte chiffré sous forme de chaîne Base64.
                 return Convert.ToBase64String(memoryStream.ToArray());
             }
         }
     }
 
+    /// <summary>
+    /// Déchiffre une chaîne de texte en utilisant une clé de déchiffrement.
+    /// </summary>
+    /// <param name="cipherText">Texte chiffré.</param>
+    /// <param name="key">Clé de déchiffrement.</param>
+    /// <returns>Texte déchiffré.</returns>
     private string DecryptString(string cipherText, string key)
     {
         try
         {
+            // Convertit le texte chiffré de Base64 en tableau d'octets.
             byte[] fullCipher = Convert.FromBase64String(cipherText);
 
             using (Aes aes = Aes.Create())
@@ -129,6 +189,7 @@ public class LoadAndSaveData : MonoBehaviour
                 byte[] salt = Encoding.UTF8.GetBytes("SaltValue1234");
                 aes.Key = new Rfc2898DeriveBytes(key, salt, 10000).GetBytes(32);
 
+                // Extrait l'IV et le texte chiffré du tableau d'octets.
                 byte[] iv = new byte[aes.BlockSize / 8];
                 byte[] cipher = new byte[fullCipher.Length - iv.Length];
 
@@ -137,6 +198,7 @@ public class LoadAndSaveData : MonoBehaviour
 
                 aes.IV = iv;
 
+                // Déchiffre le texte et le lit dans un flux.
                 using (MemoryStream memoryStream = new MemoryStream(cipher))
                 using (CryptoStream cryptoStream = new CryptoStream(memoryStream, aes.CreateDecryptor(), CryptoStreamMode.Read))
                 using (StreamReader streamReader = new StreamReader(cryptoStream))
@@ -147,19 +209,12 @@ public class LoadAndSaveData : MonoBehaviour
         }
         catch (Exception ex)
         {
+            // Affiche une erreur si le déchiffrement échoue.
             Debug.LogError($"Erreur de déchiffrement : {ex.Message}");
             return null;
         }
     }
-
-    
 }
-
-
-
-
-
-
 
 
 //*********************
