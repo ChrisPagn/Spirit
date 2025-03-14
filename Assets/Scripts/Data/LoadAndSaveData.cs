@@ -6,6 +6,8 @@ using System.Security.Cryptography;
 using System.Text;
 using Newtonsoft.Json;
 using UnityEngine;
+using System.Collections;
+using UnityEngine.Networking;
 
 /// <summary>
 /// Classe responsable de la sauvegarde et du chargement des données de jeu.
@@ -15,29 +17,32 @@ public class LoadAndSaveData : MonoBehaviour
     public static LoadAndSaveData instance;
 
     private string filePath;
-    private string encryptionKey = "YourEncryptionKeyHere"; // Remplacez par une clé sécurisée
+    private string encryptionKey;
+
+
 
     /// <summary>
-    /// Initialise l'instance singleton et définit le chemin du fichier de sauvegarde.
+    /// Initialise l'instance singleton du gestionnaire de sauvegarde et définit le chemin du fichier de sauvegarde.
+    /// Cette méthode charge également la clé de chiffrement en lançant une coroutine pour lire le fichier de configuration.
     /// </summary>
     private void Awake()
     {
-        // Vérifie s'il existe déjà une instance de cette classe.
+        // Vérifie si une instance existe déjà, sinon crée une nouvelle instance unique (Singleton)
         if (instance != null && instance != this)
         {
-            // Si une instance existe déjà, détruit l'objet actuel pour éviter les duplications.
-            Destroy(gameObject);
+            Destroy(gameObject); // Détruit l'objet en double pour éviter les conflits
             return;
         }
 
-        // Définit l'instance actuelle comme étant l'instance unique.
-        instance = this;
+        instance = this; // Définit l'instance unique du script
 
-        // Définit le chemin où le fichier de sauvegarde sera stocké.
+        // Définit le chemin du fichier de sauvegarde qui stocke les données du joueur
         filePath = Path.Combine(Application.persistentDataPath, "saveData.json");
+        // C:/Users/Chris/AppData/LocalLow/DefaultCompany/Spirit\saveData.json
+        Debug.Log("Chemin du fichier de sauvegarde : " + filePath);
 
-        // Si on veut que l'objet persiste entre les scènes, décommentez la ligne suivante :
-        // DontDestroyOnLoad(gameObject);
+        // Lance la coroutine pour charger la clé de chiffrement depuis config.json
+        StartCoroutine(LoadEncryptionKey());
     }
 
     /// <summary>
@@ -135,6 +140,50 @@ public class LoadAndSaveData : MonoBehaviour
             }
         }
     }
+
+    /// <summary>
+    /// Charge la clé de chiffrement à partir d'un fichier de configuration JSON situé dans le dossier StreamingAssets.
+    /// Cette méthode est exécutée en coroutine car elle utilise UnityWebRequest, ce qui est nécessaire pour Android et WebGL.
+    /// </summary>
+    /// <returns>Une coroutine qui charge la clé de chiffrement.</returns>
+    private IEnumerator LoadEncryptionKey()
+    {
+        // Détermine le chemin du fichier config.json dans StreamingAssets.
+        string configPath = Path.Combine(Application.streamingAssetsPath, "config.json");
+        Debug.Log("Chemin du fichier config.json : " + configPath);
+
+        // Utilisation de UnityWebRequest pour lire le fichier (obligatoire pour Android & WebGL)
+        using (UnityWebRequest www = UnityWebRequest.Get(configPath))
+        {
+            yield return www.SendWebRequest(); // Attend la fin du téléchargement
+
+            // Vérifie si une erreur s'est produite pendant la requête HTTP
+            if (www.result != UnityWebRequest.Result.Success)
+            {
+                Debug.LogError("Erreur lors de la lecture du fichier config.json : " + www.error);
+                yield break; // Arrête la coroutine si le fichier ne peut pas être chargé
+            }
+
+            // Récupère le contenu JSON du fichier
+            string json = www.downloadHandler.text;
+            Debug.Log("Contenu de config.json : " + json);
+
+            // Désérialise le JSON en un dictionnaire clé/valeur
+            var config = JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
+
+            // Vérifie si le JSON contient bien la clé "encryptionKey"
+            if (config != null && config.TryGetValue("encryptionKey", out string key))
+            {
+                encryptionKey = key; // Stocke la clé de chiffrement pour une utilisation ultérieure
+                Debug.Log("Clé de chiffrement chargée avec succès !");
+            }
+            else
+            {
+                Debug.LogError("Clé de chiffrement absente du fichier config.json !");
+            }
+        }
+    }
+
 
     /// <summary>
     /// Chiffre une chaîne de texte en utilisant une clé de chiffrement.
