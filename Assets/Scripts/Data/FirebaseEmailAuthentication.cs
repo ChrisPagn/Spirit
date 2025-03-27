@@ -4,11 +4,8 @@ using System.Threading.Tasks;
 using UnityEngine.UI;
 using TMPro;
 using UnityEngine.SceneManagement;
+using Firebase;
 
-/// <summary>
-/// Gère l'authentification par email et mot de passe avec Firebase
-/// Handles email and password authentication with Firebase
-/// </summary>
 public class FirebaseEmailAuthentication : MonoBehaviour
 {
     [Header("Authentication Inputs")]
@@ -17,9 +14,12 @@ public class FirebaseEmailAuthentication : MonoBehaviour
     public Button connectAndStartGameButton;
     public Button registerButton;
     public TextMeshProUGUI feedbackText;
+    /// <summary>
+    /// Nom de la scène à charger lorsque le jeu commence.
+    /// </summary>
+    public string levelToLoad;
 
     [Header("Game Configuration")]
-    public string gameSceneName = "MainGameScene";
 
     private FirebaseAuth auth;
 
@@ -27,17 +27,15 @@ public class FirebaseEmailAuthentication : MonoBehaviour
     {
         auth = FirebaseAuth.DefaultInstance;
 
-        // Vérification null sécurisée
         if (connectAndStartGameButton != null)
         {
-            connectAndStartGameButton.onClick.AddListener(ConnectAndStartGame);
+            connectAndStartGameButton.onClick.AddListener(ConnectToFirebase);
         }
         else
         {
             Debug.LogError("Connect and Start Game Button is missing!");
         }
 
-        // Ajoutez également un listener pour le bouton d'inscription
         if (registerButton != null)
         {
             registerButton.onClick.AddListener(CreateUserWithEmailAndPassword);
@@ -49,83 +47,80 @@ public class FirebaseEmailAuthentication : MonoBehaviour
     }
 
     /// <summary>
-    /// Connecte l'utilisateur et démarre le jeu
-    /// Connect user and start the game
+    /// Tente de connecter un utilisateur à Firebase avec email et mot de passe.
+    /// S'assure que l'utilisateur est bien authentifié avant de charger la scène.
     /// </summary>
-    public async void ConnectAndStartGame()
+    public async void ConnectToFirebase()
     {
-        // Vérification null supplémentaire
-        if (connectAndStartGameButton == null)
-        {
-            Debug.LogError("Bouton de connexion détruit. Impossible de continuer.");
-            return;
-        }
-
         if (string.IsNullOrEmpty(emailInputField.text) || string.IsNullOrEmpty(passwordInputField.text))
         {
             ShowFeedback("Veuillez saisir un email et un mot de passe", Color.red);
             return;
         }
 
-        // Méthode sécurisée pour désactiver le bouton
         SetButtonInteractable(false);
         ShowFeedback("Connexion en cours...", Color.yellow);
 
         try
         {
-            FirebaseUser user = await SignInWithEmailAndPasswordAsync(
+            // Vérifier si un utilisateur anonyme est connecté et le supprimer
+            FirebaseUser currentUser = auth.CurrentUser;
+            if (currentUser != null && currentUser.IsAnonymous)
+            {
+                await currentUser.DeleteAsync();
+                Debug.Log("Utilisateur anonyme supprimé.");
+            }
+
+            // Connexion avec email et mot de passe
+            FirebaseUser user = (await auth.SignInWithEmailAndPasswordAsync(
                 emailInputField.text,
                 passwordInputField.text
-            );
+            )).User;
 
             if (user != null)
             {
-                ShowFeedback("Connexion réussie !", Color.green);
-                await DataOrchestrator.instance.LoadData();
-                SceneManager.LoadScene(gameSceneName);
+                ShowFeedback($"Connexion reussie : {user.Email}", Color.green);
+                SceneManager.LoadScene(levelToLoad); // Charger la scène de jeu
             }
         }
-        catch (System.Exception ex)
+        catch (FirebaseException ex)
         {
-            ShowFeedback($"Erreur de connexion : {ex.Message}", Color.red);
+            ShowFeedback($"Erreur : {ex.Message}", Color.red);
         }
         finally
         {
-            // Réactiver le bouton de manière sécurisée
             SetButtonInteractable(true);
         }
     }
 
     /// <summary>
-    /// Méthode asynchrone pour la connexion Firebase
-    /// Asynchronous method for Firebase sign-in
+    /// Crée un nouveau compte utilisateur sur Firebase.
     /// </summary>
-    private Task<FirebaseUser> SignInWithEmailAndPasswordAsync(string email, string password)
+    public async void CreateUserWithEmailAndPassword()
     {
-        // Utiliser TaskCompletionSource pour gérer l'authentification asynchrone
-        // Use TaskCompletionSource to manage asynchronous authentication
-        var tcs = new TaskCompletionSource<FirebaseUser>();
-        auth.SignInWithEmailAndPasswordAsync(email, password).ContinueWith(task =>
+        if (string.IsNullOrEmpty(emailInputField.text) || string.IsNullOrEmpty(passwordInputField.text))
         {
-            if (task.IsCanceled)
-            {
-                tcs.SetCanceled();
-                return;
-            }
-            if (task.IsFaulted)
-            {
-                tcs.SetException(task.Exception);
-                return;
-            }
-            // Connexion réussie
-            // Successful sign-in
-            tcs.SetResult(task.Result.User);
-        });
-        return tcs.Task;
+            ShowFeedback("Veuillez saisir un email et un mot de passe", Color.red);
+            return;
+        }
+
+        try
+        {
+            FirebaseUser user = (await auth.CreateUserWithEmailAndPasswordAsync(
+                emailInputField.text,
+                passwordInputField.text
+            )).User;
+
+            ShowFeedback($"Compte créé ! ID : {user.UserId}", Color.green);
+        }
+        catch (FirebaseException ex)
+        {
+            ShowFeedback($"Erreur : {ex.Message}", Color.red);
+        }
     }
 
     /// <summary>
-    /// Méthode sécurisée pour définir l'interactivité du bouton
+    /// Active ou désactive le bouton de connexion.
     /// </summary>
     private void SetButtonInteractable(bool interactable)
     {
@@ -136,45 +131,10 @@ public class FirebaseEmailAuthentication : MonoBehaviour
     }
 
     /// <summary>
-    /// Crée un nouveau compte utilisateur
-    /// </summary>
-    public void CreateUserWithEmailAndPassword()
-    {
-        if (string.IsNullOrEmpty(emailInputField.text) || string.IsNullOrEmpty(passwordInputField.text))
-        {
-            ShowFeedback("Veuillez saisir un email et un mot de passe", Color.red);
-            return;
-        }
-
-        auth.CreateUserWithEmailAndPasswordAsync(emailInputField.text, passwordInputField.text)
-            .ContinueWith(task =>
-            {
-                if (task.IsCanceled)
-                {
-                    ShowFeedback("Création de compte annulée", Color.yellow);
-                    return;
-                }
-
-                if (task.IsFaulted)
-                {
-                    ShowFeedback("Erreur de création de compte : " + task.Exception.ToString(), Color.red);
-                    return;
-                }
-
-                AuthResult result = task.Result;
-                FirebaseUser user = result.User;
-                ShowFeedback("Compte créé ! ID : " + user.UserId, Color.green);
-            });
-    }
-
-    /// <summary>
-    /// Affiche un message de feedback à l'utilisateur
-    /// Display feedback message to user
+    /// Affiche un message à l'utilisateur.
     /// </summary>
     private void ShowFeedback(string message, Color color)
     {
-        // Assurer l'exécution sur le thread principal
-        // Ensure execution on the main thread
         if (feedbackText != null)
         {
             feedbackText.text = message;
