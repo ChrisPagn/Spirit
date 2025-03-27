@@ -67,21 +67,33 @@ public class LoadSpecificScene : MonoBehaviour
     }
 
     /// <summary>
-    /// Coroutine qui gère le chargement de la nouvelle scène avec un fondu.
+    /// Coroutine qui gère le chargement de la nouvelle scène avec un fondu avec sauvegarde et chargement des données.
     /// </summary>
     /// <returns>Un IEnumerator nécessaire pour le fonctionnement d'une coroutine</returns>
     public IEnumerator LoadNextScene()
     {
-        // Trouver le joueur et le Canvas UI
-        GameObject player = GameObject.FindGameObjectWithTag("Player");
+        // Vérifiez si DataOrchestrator est initialisé
+        if (DataOrchestrator.instance == null)
+        {
+            Debug.LogError("DataOrchestrator.instance est null.");
+        }
+        else
+        {
+            // Sauvegarde des données
+            DataOrchestrator.instance.SaveData();
+            Debug.LogWarning("Données sauvegardées au passage de niveau");
+        }
 
-        //sauvegarde des données
-        LoadAndSaveData.instance.SaveData();
-        Debug.LogWarning("Données sauvegardées au passage de niveau");
-
-
-        // Déclencher l'animation de fondu via l'Animator
-        fadeSysteme.SetTrigger("FadeIn");
+        // Vérifiez si fadeSysteme est initialisé
+        if (fadeSysteme == null)
+        {
+            Debug.LogError("fadeSysteme est null.");
+        }
+        else
+        {
+            // Déclencher l'animation de fondu via l'Animator
+            fadeSysteme.SetTrigger("FadeIn");
+        }
 
         // Attendre que l'animation se termine avant de charger la scène (1 seconde ici)
         yield return new WaitForSeconds(1f);
@@ -89,7 +101,16 @@ public class LoadSpecificScene : MonoBehaviour
         // Charger la nouvelle scène spécifiée dans "sceneName"
         SceneManager.LoadScene(sceneName);
 
-        // Recharger les données après le chargement de la scène
-        LoadAndSaveData.instance.LoadData();
+        // Vérifiez si LoadAndSaveData est initialisé
+        if (LoadAndSaveData.instance == null)
+        {
+            Debug.LogError("LoadAndSaveData.instance est null.");
+        }
+        else
+        {
+            // Recharger les données après le chargement de la scène
+            LoadAndSaveData.instance.LoadData();
+        }
     }
+
 }

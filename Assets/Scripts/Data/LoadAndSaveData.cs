@@ -15,11 +15,8 @@ using UnityEngine.Networking;
 public class LoadAndSaveData : MonoBehaviour
 {
     public static LoadAndSaveData instance;
-
     private string filePath;
     private string encryptionKey;
-
-
 
     /// <summary>
     /// Initialise l'instance singleton du gestionnaire de sauvegarde et définit le chemin du fichier de sauvegarde.
@@ -35,11 +32,10 @@ public class LoadAndSaveData : MonoBehaviour
         }
 
         instance = this; // Définit l'instance unique du script
-        DontDestroyOnLoad(gameObject);
+        DontDestroyOnLoad(gameObject); // Conserve l'objet entre les scènes
 
         // Définit le chemin du fichier de sauvegarde qui stocke les données du joueur
         filePath = Path.Combine(Application.persistentDataPath, "saveData.json");
-        // C:/Users/Chris/AppData/LocalLow/DefaultCompany/Spirit\saveData.json
         Debug.Log("Chemin du fichier de sauvegarde : " + filePath);
 
         // Lance la coroutine pour charger la clé de chiffrement depuis config.json
@@ -47,22 +43,9 @@ public class LoadAndSaveData : MonoBehaviour
     }
 
     /// <summary>
-    /// Charge les données sauvegardées lorsque le jeu commence.
+    /// Sauvegarde les données actuelles du jeu dans un fichier local.
     /// </summary>
-    void Start()
-    {
-        // Affiche le chemin du fichier de sauvegarde pour le débogage.
-        // C:/Users/Chris/AppData/LocalLow/DefaultCompany/Spirit\saveData.json
-        Debug.Log("Chemin du fichier de sauvegarde : " + filePath);
-
-        // Charge les données sauvegardées.
-        LoadData();
-    }
-
-    /// <summary>
-    /// Sauvegarde les données actuelles du jeu dans un fichier + dans Firebase.
-    /// </summary>
-    public void SaveData()
+    public void SaveDataToLocal()
     {
         // Crée un objet SaveData contenant les données à sauvegarder.
         var saveData = new SaveData
@@ -85,8 +68,7 @@ public class LoadAndSaveData : MonoBehaviour
             // Écrit le JSON chiffré dans le fichier.
             File.WriteAllText(filePath, encryptedJson);
 
-            // Sauvegarde Firebase via le script LoadAndSaveDataFirebase
-            LoadAndSaveDataFirebase.instance.SaveDataToFirebase(saveData);
+            Debug.Log("Données sauvegardées localement avec succès !");
         }
         catch (Exception ex)
         {
@@ -96,17 +78,11 @@ public class LoadAndSaveData : MonoBehaviour
     }
 
     /// <summary>
-    /// Charge les données sauvegardées à partir du fichier local et de Firebase, puis fusionne les deux sources.
-    /// Si des données locales existent, elles sont chargées en premier. Les données Firebase sont ensuite chargées
-    /// et fusionnées avec les données locales en fonction de la date de modification. Les données finales sont
-    /// appliquées au jeu.
+    /// Charge les données sauvegardées à partir du fichier local.
     /// </summary>
-    public async void LoadData()
+    /// <returns>Les données de sauvegarde chargées, ou null si le chargement échoue.</returns>
+    public SaveData LoadData()
     {
-        SaveData localSaveData = null;
-        SaveData firebaseSaveData = null;
-
-        // Vérifie si le fichier de sauvegarde local existe.
         if (File.Exists(filePath))
         {
             try
@@ -114,93 +90,18 @@ public class LoadAndSaveData : MonoBehaviour
                 // Lit et déchiffre les données locales
                 string encryptedJson = File.ReadAllText(filePath);
                 string json = DecryptString(encryptedJson, encryptionKey);
-                localSaveData = JsonConvert.DeserializeObject<SaveData>(json);
+                var saveData = JsonConvert.DeserializeObject<SaveData>(json);
 
                 Debug.Log("Données locales chargées avec succès !");
+                return saveData;
             }
             catch (Exception ex)
             {
                 Debug.LogError($"Erreur chargement local : {ex.Message}");
             }
         }
-
-        // Charge les données depuis Firebase, même si des données locales existent
-        try
-        {
-            firebaseSaveData = await LoadAndSaveDataFirebase.instance.LoadDataFromFirebaseAsync();
-            Debug.Log("Données Firebase chargées avec succès !");
-        }
-        catch (Exception ex)
-        {
-            Debug.LogError($"Erreur chargement Firebase : {ex.Message}");
-        }
-
-        // Fusionne les données locales et Firebase si nécessaire
-        SaveData finalSaveData = MergeSaveData(localSaveData, firebaseSaveData);
-
-        // Applique les données finales au jeu
-        ApplyData(finalSaveData);
+        return null;
     }
-
-
-    /// <summary>
-    /// Fusionne les données locales et Firebase.
-    /// </summary>
-    private SaveData MergeSaveData(SaveData localData, SaveData firebaseData)
-    {
-        if (localData == null)
-        {
-            return firebaseData; // Utilise les données Firebase si les données locales sont nulles
-        }
-
-        if (firebaseData == null)
-        {
-            return localData; // Utilise les données locales si les données Firebase sont nulles
-        }
-
-        // Compare les dates de modification et retourne les données les plus récentes
-        if (firebaseData.LastModified > localData.LastModified)
-        {
-            return firebaseData;
-        }
-        else
-        {
-            return localData;
-        }
-
-        return localData; // Utilise les données locales si Firebase est null
-    }
-
-    /// <summary>
-    /// Applique les données sauvegardées au jeu.
-    /// </summary>
-    private void ApplyData(SaveData saveData)
-    {
-        if (saveData != null)
-        {
-            // Met à jour les composants du jeu avec les données chargées
-            Inventory.instance.coinsCount = saveData.CoinsCount;
-            Inventory.instance.UpdateTextUI();
-
-            Inventory.instance.contentItems.Clear();
-            foreach (int id in saveData.InventoryItems)
-            {
-                Item currentItem = ItemsDataBase.instance.allItems.FirstOrDefault(x => x.id == id);
-                if (currentItem != null)
-                {
-                    Inventory.instance.contentItems.Add(currentItem);
-                }
-            }
-
-            Inventory.instance.UpdateInventoryUI();
-            CurrentSceneManager.instance.levelToUnlock = saveData.LevelReached;
-        }
-        else
-        {
-            Debug.LogWarning("Aucune donnée valide trouvée.");
-        }
-    }
-
 
     /// <summary>
     /// Charge la clé de chiffrement à partir d'un fichier de configuration JSON situé dans le dossier StreamingAssets.
@@ -244,7 +145,6 @@ public class LoadAndSaveData : MonoBehaviour
             }
         }
     }
-
 
     /// <summary>
     /// Chiffre une chaîne de texte en utilisant une clé de chiffrement.
@@ -325,6 +225,8 @@ public class LoadAndSaveData : MonoBehaviour
         }
     }
 }
+
+
 
 
 //*********************
