@@ -71,7 +71,7 @@ public class EnemyPatrol : MonoBehaviour
             PlayerMovement playerMovement = collision.transform.GetComponent<PlayerMovement>();
 
             // Vérifie si le joueur est en train de sauter
-            if (playerMovement != null && playerMovement.isJumping)
+            if (playerMovement != null && playerMovement.IsOnGround)
             {
                 // Supprimer l'ennemi si le joueur saute dessus
                 Destroy(gameObject);

@@ -10,6 +10,7 @@ using UnityEngine.UI;
 /// </summary>
 public class DialogueManager : MonoBehaviour
 {
+
     /// <summary>
     /// Texte affichant le nom du PNJ qui parle.
     /// </summary>
@@ -54,6 +55,10 @@ public class DialogueManager : MonoBehaviour
         instance = this;
         interactUI = GameObject.FindGameObjectWithTag("InteractUILadder").GetComponent<TextMeshProUGUI>();
         sentences = new Queue<string>();
+
+        //S'assurer que le message : interaction est désactif lors du démarrage :
+        Debug.Log("je change de scene");
+
     }
 
     /// <summary>

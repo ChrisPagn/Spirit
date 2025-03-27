@@ -40,7 +40,7 @@ public class PlayerMovement : MonoBehaviour
     /// <summary>
     /// Indicateur si le joueur est en train de sauter.
     /// </summary>
-    public bool isJumping = false;
+    public bool IsOnGround = false;
 
     /// <summary>
     /// Indicateur si le joueur est au sol.
@@ -107,20 +107,13 @@ public class PlayerMovement : MonoBehaviour
 
         instance = this;
 
-        Debug.LogWarning("Player Not Destroy change scene!");
-    }
-
-    /// <summary>
-    /// Méthode appelée au démarrage du script.
-    /// Initialise le Rigidbody2D si non assigné dans l'éditeur.
-    /// </summary>
-    void Start()
-    {
         // Vérifie si le Rigidbody2D est assigné, sinon essaie de le récupérer automatiquement
         if (rigidbody == null)
         {
             rigidbody = GetComponent<Rigidbody2D>();
         }
+
+        Debug.LogWarning("Player Not Destroy change scene!");
     }
 
     /// <summary>
@@ -131,14 +124,15 @@ public class PlayerMovement : MonoBehaviour
         // Récupère l'input horizontal ("Horizontal" fait référence aux touches fléchées ou aux sticks analogiques)
         horizontalMovement = Input.GetAxis("Horizontal") * moveSpeed * Time.fixedDeltaTime;
         
-        // Récupère l'input vertical ("Vertical" fait référence aux touches fléchées ou aux sticks analogiques)
+        // Récupère l'input vertical ("Vertical"DDD fait référence aux touches fléchées ou aux sticks analogiques)
         verticalMovement = Input.GetAxis("Vertical") * climbSpeed * Time.fixedDeltaTime;
 
         // Vérifie si le joueur est en train de sauter (barre espace)
-        if (Input.GetButtonDown("Jump") && isGrounded && !isClimbing)
+        if (Input.GetButtonDown("Jump") && IsOnGround && !isClimbing)
         {
-            isJumping = true;
-            Debug.Log($"Update(): isJumping: {isJumping}, isGrounded: {isGrounded}, isClimbing: {isClimbing}");
+            IsOnGround = false;
+            rigidbody.AddForce( transform.up * jumpForce);
+            Debug.Log($"Update(): isJumping: {IsOnGround}, isGrounded: {isGrounded}, isClimbing: {isClimbing}");
         }
 
         // Appelle de la méthode pour l'inversion du sens du personnage lors des déplacements
@@ -159,14 +153,8 @@ public class PlayerMovement : MonoBehaviour
     /// </summary>
     void FixedUpdate()
     {
-        isGrounded = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, collinsionLayers);
-
-        // Réinitialiser isJumping si le joueur n'est plus au sol
-        if (!isGrounded)
-        {
-            isJumping = false;
-        }
-
+        IsOnGround = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, collinsionLayers);
+      
         // Si le joueur n'est pas en train de grimper, on applique un mouvement horizontal classique
         if (!isClimbing)
         {
@@ -179,34 +167,6 @@ public class PlayerMovement : MonoBehaviour
             MovePlayer(0, verticalMovement);
         }
 
-        // Si le joueur touche le sol et que l'état isJumping est encore actif
-        if (isGrounded && isJumping)
-        {
-            // Ajoute un léger délai pour éviter une réinitialisation instantanée
-            StartCoroutine(ResetJumpAfterLanding());
-        }
-    }
-
-
-    /// <summary>
-    /// Coroutine qui attend que le joueur touche le sol avant de réinitialiser l'état de saut.
-    /// Cela permet d'éviter des bugs où le joueur ne peut pas sauter après un atterrissage.
-    /// </summary>
-    private IEnumerator ResetJumpAfterLanding()
-    {
-        // Attendre jusqu'à ce que le joueur soit au sol
-        yield return new WaitUntil(() => isGrounded);
-        Debug.Log($"ResetJumpAfterLanding(): isGrounded: {isGrounded}");
-
-        // Une fois au sol, attendre un très court délai pour stabiliser le contact
-        yield return new WaitForSeconds(0.1f); // Ajustez ce délai si nécessaire
-
-        // Vérifiez à nouveau si le joueur est bien au sol avant de réinitialiser isJumping
-        if (isGrounded) // Correction ici : on veut réinitialiser seulement si le joueur EST au sol
-        {
-            isJumping = false;
-            Debug.Log("Le joueur a atterri, isJumping repasse à FALSE.");
-        }
     }
 
     /// <summary>
@@ -222,10 +182,6 @@ public class PlayerMovement : MonoBehaviour
             // Applique un lissage à la vélocité du joueur pour un mouvement plus fluide
             // SmoothDamp lisse la transition entre la vélocité actuelle et la cible
             rigidbody.velocity = Vector2.SmoothDamp(rigidbody.velocity, targetVelocity, ref velocity, .05f);
-            if (isJumping == true)
-            {
-                rigidbody.velocity = new Vector2(rigidbody.velocity.x, jumpForce);
-            }
         }
         else
         {

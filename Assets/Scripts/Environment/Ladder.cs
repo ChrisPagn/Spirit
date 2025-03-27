@@ -1,3 +1,4 @@
+using Firebase.Firestore;
 using TMPro; 
 using UnityEngine;
 
@@ -79,6 +80,8 @@ public class Ladder : MonoBehaviour
             isInRange = false;
             if (playerMovement.isGrounded)
             {
+                Debug.Log("j'eteind presse sur E : ");
+
                 playerMovement.isClimbing = false;
                 topCollider2D.isTrigger = false;
                 interactUILadder.enabled = false;

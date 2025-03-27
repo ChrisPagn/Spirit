@@ -47,8 +47,6 @@ public class LoadSpecificScene : MonoBehaviour
         {
             Debug.LogError($"L'objet {fadeObject.name} a été trouvé mais il ne contient pas d'Animator !");
         }
-        ////chargement des données
-        //LoadAndSaveData.instance.LoadData();
     }
 
 
@@ -90,5 +88,8 @@ public class LoadSpecificScene : MonoBehaviour
 
         // Charger la nouvelle scène spécifiée dans "sceneName"
         SceneManager.LoadScene(sceneName);
+
+        // Recharger les données après le chargement de la scène
+        LoadAndSaveData.instance.LoadData();
     }
 }

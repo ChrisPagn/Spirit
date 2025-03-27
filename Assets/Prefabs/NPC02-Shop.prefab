@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 3700607358012494183}
   - component: {fileID: 3700607358012494182}
   - component: {fileID: 5647386093259480170}
+  - component: {fileID: 5104692265611477788}
   m_Layer: 0
   m_Name: NPC02-Shop
   m_TagString: Untagged
@@ -76,6 +77,21 @@ MonoBehaviour:
   itemsToShell:
   - {fileID: 11400000, guid: fef9fd43a16f69a47ad3d9da7dfe9746, type: 2}
   - {fileID: 11400000, guid: 81a7a703e3de5b843931c9d562a896c8, type: 2}
+--- !u!114 &5104692265611477788
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3700607358012494181}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a6a0dfd0342ba0c4a8bc9d5d94523ed3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  npcNameReference: {fileID: 0}
+  animatorReference: {fileID: 0}
+  sellButtonsParentReference: {fileID: 0}
 --- !u!1 &3700607359335695974
 GameObject:
   m_ObjectHideFlags: 0

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "882539136352",
+    "project_id": "spirit-24e76",
+    "storage_bucket": "spirit-24e76.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:882539136352:android:ea49753196bcf41ecd0a05",
+        "android_client_info": {
+          "package_name": "com.DefaultCompany.com.unity.template.mobile2D"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB6hDdNLn4TNIPHTnHj2z4Ks6ok6vuDzqg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

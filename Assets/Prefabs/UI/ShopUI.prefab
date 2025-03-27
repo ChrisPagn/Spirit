@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 4249032487902908464}
   - component: {fileID: 4249032487902908465}
   - component: {fileID: 4249032487902908466}
+  - component: {fileID: 4784304925823669418}
   m_Layer: 5
   m_Name: ShopUI
   m_TagString: Untagged
@@ -100,6 +101,21 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!114 &4784304925823669418
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4249032487902908468}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a6a0dfd0342ba0c4a8bc9d5d94523ed3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  npcNameReference: {fileID: 4249032488760162619}
+  animatorReference: {fileID: 4249032487902908466}
+  sellButtonsParentReference: {fileID: 4249032489576779270}
 --- !u!1 &4249032487929335745
 GameObject:
   m_ObjectHideFlags: 0

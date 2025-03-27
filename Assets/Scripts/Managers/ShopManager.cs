@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -9,6 +10,7 @@ using UnityEngine.UI;
 /// </summary>
 public class ShopManager : MonoBehaviour
 {
+    public ShopUIReference shopUIReference;
     /// <summary>
     /// Texte affichant le nom du PNJ vendeur.
     /// </summary>
@@ -45,6 +47,26 @@ public class ShopManager : MonoBehaviour
             return;
         }
         instance = this;
+
+        OnLoadReference();
+    }
+
+    /// <summary>
+    /// Modif flo : Ajout de la méthode OnLoadReference pour charger les références de l'interface utilisateur. 
+    /// </summary>
+    private void OnLoadReference()
+    {
+        try
+        {
+            npcNameText = shopUIReference.npcNameReference;
+            animator = shopUIReference.animatorReference;
+            sellButtonsParent = shopUIReference.sellButtonsParentReference;
+        }
+        catch (Exception)
+        {
+            Debug.LogError("probleme avec les ref");
+        }
+    
     }
 
     /// <summary>

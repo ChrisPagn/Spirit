@@ -138,9 +138,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   moveSpeed: 200
   climbSpeed: 130
-  jumpForce: 6.5
+  jumpForce: 340
   groundCheckRadius: 0.4
-  isJumping: 0
+  IsOnGround: 0
   isGrounded: 0
   isClimbing: 0
   rigidbody: {fileID: 0}
@@ -148,7 +148,7 @@ MonoBehaviour:
   spriteRenderer: {fileID: 238012915355162494}
   collinsionLayers:
     serializedVersion: 2
-    m_Bits: 1
+    m_Bits: 129
   groundCheck: {fileID: 238012914405782160}
   playerCollider: {fileID: 238012915355162432}
 --- !u!50 &238012915355162492

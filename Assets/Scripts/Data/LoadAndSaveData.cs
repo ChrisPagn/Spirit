@@ -35,6 +35,7 @@ public class LoadAndSaveData : MonoBehaviour
         }
 
         instance = this; // Définit l'instance unique du script
+        DontDestroyOnLoad(gameObject);
 
         // Définit le chemin du fichier de sauvegarde qui stocke les données du joueur
         filePath = Path.Combine(Application.persistentDataPath, "saveData.json");
@@ -59,7 +60,7 @@ public class LoadAndSaveData : MonoBehaviour
     }
 
     /// <summary>
-    /// Sauvegarde les données actuelles du jeu dans un fichier.
+    /// Sauvegarde les données actuelles du jeu dans un fichier + dans Firebase.
     /// </summary>
     public void SaveData()
     {
@@ -68,7 +69,9 @@ public class LoadAndSaveData : MonoBehaviour
         {
             CoinsCount = Inventory.instance.coinsCount,
             LevelReached = CurrentSceneManager.instance.levelToUnlock,
-            InventoryItems = Inventory.instance.contentItems.ConvertAll(item => item.id)
+            InventoryItems = Inventory.instance.contentItems.ConvertAll(item => item.id),
+            InventoryItemsName = Inventory.instance.contentItems.ConvertAll(item => item.name),
+            LastModified = DateTime.UtcNow // Mettre à jour la date de modification
         };
 
         try
@@ -81,6 +84,9 @@ public class LoadAndSaveData : MonoBehaviour
 
             // Écrit le JSON chiffré dans le fichier.
             File.WriteAllText(filePath, encryptedJson);
+
+            // Sauvegarde Firebase via le script LoadAndSaveDataFirebase
+            LoadAndSaveDataFirebase.instance.SaveDataToFirebase(saveData);
         }
         catch (Exception ex)
         {
@@ -90,56 +96,111 @@ public class LoadAndSaveData : MonoBehaviour
     }
 
     /// <summary>
-    /// Charge les données sauvegardées à partir du fichier.
+    /// Charge les données sauvegardées à partir du fichier local et de Firebase, puis fusionne les deux sources.
+    /// Si des données locales existent, elles sont chargées en premier. Les données Firebase sont ensuite chargées
+    /// et fusionnées avec les données locales en fonction de la date de modification. Les données finales sont
+    /// appliquées au jeu.
     /// </summary>
-    private void LoadData()
+    public async void LoadData()
     {
-        // Vérifie si le fichier de sauvegarde existe.
+        SaveData localSaveData = null;
+        SaveData firebaseSaveData = null;
+
+        // Vérifie si le fichier de sauvegarde local existe.
         if (File.Exists(filePath))
         {
             try
             {
-                // Lit le contenu chiffré du fichier.
+                // Lit et déchiffre les données locales
                 string encryptedJson = File.ReadAllText(filePath);
-
-                // Déchiffre le contenu.
                 string json = DecryptString(encryptedJson, encryptionKey);
+                localSaveData = JsonConvert.DeserializeObject<SaveData>(json);
 
-                // Désérialise le JSON en un objet SaveData.
-                SaveData saveData = JsonConvert.DeserializeObject<SaveData>(json);
-
-                // Si les données sont valides, met à jour les composants du jeu.
-                if (saveData != null)
-                {
-                    Inventory.instance.coinsCount = saveData.CoinsCount;
-                    Inventory.instance.UpdateTextUI();
-
-                    // Ajoute les éléments d'inventaire sauvegardés.
-                    foreach (int id in saveData.InventoryItems)
-                    {
-                        Item currentItem = ItemsDataBase.instance.allItems.FirstOrDefault(x => x.id == id);
-                        if (currentItem != null)
-                        {
-                            Inventory.instance.contentItems.Add(currentItem);
-                        }
-                    }
-
-                    Inventory.instance.UpdateInventoryUI();
-                    CurrentSceneManager.instance.levelToUnlock = saveData.LevelReached;
-                }
-                else
-                {
-                    // Affiche un avertissement si les données sont corrompues.
-                    Debug.LogWarning("Les données sauvegardées sont corrompues ou invalides.");
-                }
+                Debug.Log("Données locales chargées avec succès !");
             }
             catch (Exception ex)
             {
-                // Affiche une erreur si le chargement échoue.
-                Debug.LogError($"Erreur lors du chargement des données : {ex.Message}");
+                Debug.LogError($"Erreur chargement local : {ex.Message}");
             }
         }
+
+        // Charge les données depuis Firebase, même si des données locales existent
+        try
+        {
+            firebaseSaveData = await LoadAndSaveDataFirebase.instance.LoadDataFromFirebaseAsync();
+            Debug.Log("Données Firebase chargées avec succès !");
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError($"Erreur chargement Firebase : {ex.Message}");
+        }
+
+        // Fusionne les données locales et Firebase si nécessaire
+        SaveData finalSaveData = MergeSaveData(localSaveData, firebaseSaveData);
+
+        // Applique les données finales au jeu
+        ApplyData(finalSaveData);
     }
+
+
+    /// <summary>
+    /// Fusionne les données locales et Firebase.
+    /// </summary>
+    private SaveData MergeSaveData(SaveData localData, SaveData firebaseData)
+    {
+        if (localData == null)
+        {
+            return firebaseData; // Utilise les données Firebase si les données locales sont nulles
+        }
+
+        if (firebaseData == null)
+        {
+            return localData; // Utilise les données locales si les données Firebase sont nulles
+        }
+
+        // Compare les dates de modification et retourne les données les plus récentes
+        if (firebaseData.LastModified > localData.LastModified)
+        {
+            return firebaseData;
+        }
+        else
+        {
+            return localData;
+        }
+
+        return localData; // Utilise les données locales si Firebase est null
+    }
+
+    /// <summary>
+    /// Applique les données sauvegardées au jeu.
+    /// </summary>
+    private void ApplyData(SaveData saveData)
+    {
+        if (saveData != null)
+        {
+            // Met à jour les composants du jeu avec les données chargées
+            Inventory.instance.coinsCount = saveData.CoinsCount;
+            Inventory.instance.UpdateTextUI();
+
+            Inventory.instance.contentItems.Clear();
+            foreach (int id in saveData.InventoryItems)
+            {
+                Item currentItem = ItemsDataBase.instance.allItems.FirstOrDefault(x => x.id == id);
+                if (currentItem != null)
+                {
+                    Inventory.instance.contentItems.Add(currentItem);
+                }
+            }
+
+            Inventory.instance.UpdateInventoryUI();
+            CurrentSceneManager.instance.levelToUnlock = saveData.LevelReached;
+        }
+        else
+        {
+            Debug.LogWarning("Aucune donnée valide trouvée.");
+        }
+    }
+
 
     /// <summary>
     /// Charge la clé de chiffrement à partir d'un fichier de configuration JSON situé dans le dossier StreamingAssets.

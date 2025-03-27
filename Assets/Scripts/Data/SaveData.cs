@@ -8,8 +8,9 @@ using UnityEngine;
 [System.Serializable]
 public class SaveData 
 {
-        public int CoinsCount;
-        public int LevelReached;
-        public List<int> InventoryItems;
-    
+    public int CoinsCount;
+    public int LevelReached;
+    public List<int> InventoryItems;
+    public List<string> InventoryItemsName;
+    public DateTime LastModified; 
 }
