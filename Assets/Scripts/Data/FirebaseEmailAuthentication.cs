@@ -29,7 +29,7 @@ public class FirebaseEmailAuthentication : MonoBehaviour
 
         if (connectAndStartGameButton != null)
         {
-            connectAndStartGameButton.onClick.AddListener(ConnectToFirebase);
+            connectAndStartGameButton.onClick.AddListener(HandleAuthentication);
         }
         else
         {
@@ -45,6 +45,7 @@ public class FirebaseEmailAuthentication : MonoBehaviour
             Debug.LogError("Register Button is missing!");
         }
     }
+
 
     /// <summary>
     /// Tente de connecter un utilisateur à Firebase avec email et mot de passe.
@@ -79,8 +80,8 @@ public class FirebaseEmailAuthentication : MonoBehaviour
 
             if (user != null)
             {
-                ShowFeedback($"Connexion reussie : {user.Email}", Color.green);
-                SceneManager.LoadScene(levelToLoad); // Charger la scène de jeu
+                ShowFeedback($"Connexion reussie : {user.Email}, {user.UserId}", Color.black);
+                //SceneManager.LoadScene(levelToLoad); // Charger la scène de jeu
             }
         }
         catch (FirebaseException ex)
@@ -111,13 +112,76 @@ public class FirebaseEmailAuthentication : MonoBehaviour
                 passwordInputField.text
             )).User;
 
-            ShowFeedback($"Compte créé ! ID : {user.UserId}", Color.green);
+            ShowFeedback($"Compte cree ! ID : {user.Email}, {user.UserId}", Color.black);
         }
         catch (FirebaseException ex)
         {
             ShowFeedback($"Erreur : {ex.Message}", Color.red);
         }
     }
+
+    public async void HandleAuthentication()
+    {
+        if (string.IsNullOrEmpty(emailInputField.text) || string.IsNullOrEmpty(passwordInputField.text))
+        {
+            ShowFeedback("Veuillez saisir un email et un mot de passe", Color.red);
+            return;
+        }
+
+        SetButtonInteractable(false);
+        ShowFeedback("Connexion en cours...", Color.yellow);
+
+        try
+        {
+            // Vérifier si un utilisateur anonyme est connecté et le supprimer
+            FirebaseUser currentUser = auth.CurrentUser;
+            if (currentUser != null && currentUser.IsAnonymous)
+            {
+                await currentUser.DeleteAsync();
+                Debug.Log("Utilisateur anonyme supprimé.");
+            }
+
+            // Tenter de se connecter avec email et mot de passe
+            FirebaseUser user = (await auth.SignInWithEmailAndPasswordAsync(
+                emailInputField.text,
+                passwordInputField.text
+            )).User;
+
+            if (user != null)
+            {
+                ShowFeedback($"Connexion reussie : {user.Email}, {user.UserId}", Color.black);
+                //SceneManager.LoadScene(levelToLoad); // Charger la scène de jeu
+            }
+            else
+            {
+                // Si la connexion échoue, proposer la création de compte
+                ShowFeedback("Compte non trouve. Creation de compte...", Color.yellow);
+                user = (await auth.CreateUserWithEmailAndPasswordAsync(
+                    emailInputField.text,
+                    passwordInputField.text
+                )).User;
+
+                if (user != null)
+                {
+                    ShowFeedback($"Compte cree ! ID : {user.Email}, {user.UserId}", Color.black);
+                    //SceneManager.LoadScene(levelToLoad); // Charger la scène de jeu
+                }
+                else
+                {
+                    ShowFeedback("Erreur lors de la creation du compte.", Color.red);
+                }
+            }
+        }
+        catch (FirebaseException ex)
+        {
+            ShowFeedback($"Erreur : {ex.Message}", Color.red);
+        }
+        finally
+        {
+            SetButtonInteractable(true);
+        }
+    }
+
 
     /// <summary>
     /// Active ou désactive le bouton de connexion.

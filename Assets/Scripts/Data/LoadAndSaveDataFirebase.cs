@@ -38,7 +38,6 @@ public class LoadAndSaveDataFirebase : MonoBehaviour
     /// </summary>
     private void Awake()
     {
-        // Implémentation du pattern Singleton pour garantir une seule instance
         if (instance == null)
         {
             instance = this;
@@ -46,44 +45,31 @@ public class LoadAndSaveDataFirebase : MonoBehaviour
         }
         else
         {
-            // Détruit l'objet en double pour éviter les duplications
             Destroy(gameObject);
             return;
         }
 
-        // Vérifie et initialise Firebase
         FirebaseApp.CheckAndFixDependenciesAsync().ContinueWith(task =>
         {
             if (task.Result == DependencyStatus.Available)
             {
-                // Initialisation de l'application Firebase
                 FirebaseApp app = FirebaseApp.DefaultInstance;
-
-                // Référence à la collection Firestore
                 dbReference = FirebaseFirestore.DefaultInstance.Collection("users");
-
-                // Initialisation de l'authentification Firebase
                 auth = FirebaseAuth.DefaultInstance;
 
-                // Authentification anonyme de l'utilisateur
-                auth.SignInAnonymouslyAsync().ContinueWith(authTask =>
+                // Ne pas authentifier anonymement ici
+                user = auth.CurrentUser;
+                if (user != null)
                 {
-                    if (authTask.IsCompletedSuccessfully)
-                    {
-                        // Récupération de l'utilisateur actuel
-                        user = auth.CurrentUser;
-                        Debug.Log("Connecté à Firebase avec l'ID: " + user.UserId);
-                    }
-                    else
-                    {
-                        // Log d'erreur en cas d'échec de la connexion
-                        Debug.LogError("Erreur connexion Firebase: " + authTask.Exception);
-                    }
-                });
+                    Debug.Log("Connecté à Firebase avec l'ID: " + user.UserId);
+                }
+                else
+                {
+                    Debug.LogWarning("Aucun utilisateur connecté.");
+                }
             }
             else
             {
-                // Log d'erreur si Firebase n'est pas disponible
                 Debug.LogError("Firebase non disponible : " + task.Result);
             }
         });
