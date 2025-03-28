@@ -8,6 +8,8 @@ using UnityEngine;
 [System.Serializable]
 public class SaveData 
 {
+    public string UserId;
+    public string DisplayName;
     public int CoinsCount;
     public int LevelReached;
     public List<int> InventoryItems;

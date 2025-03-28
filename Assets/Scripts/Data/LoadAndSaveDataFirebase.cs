@@ -93,6 +93,7 @@ public class LoadAndSaveDataFirebase : MonoBehaviour
             // Création d'un dictionnaire pour stocker les données
             var docData = new Dictionary<string, object>
             {
+                { "DisplayName", saveData.DisplayName },
                 { "CoinsCount", saveData.CoinsCount },
                 { "LevelReached", saveData.LevelReached },
                 { "InventoryItems", saveData.InventoryItems },
@@ -138,6 +139,7 @@ public class LoadAndSaveDataFirebase : MonoBehaviour
                 // Création d'un objet SaveData à partir des données récupérées
                 var saveData = new SaveData
                 {
+                    DisplayName = Convert.ToString(docData["DisplayName"]),
                     CoinsCount = Convert.ToInt32(docData["CoinsCount"]),
                     LevelReached = Convert.ToInt32(docData["LevelReached"]),
                     LastModified = ((Timestamp)docData["LastModified"]).ToDateTime()

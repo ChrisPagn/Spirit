@@ -11,6 +11,7 @@ public class FirebaseEmailAuthentication : MonoBehaviour
     [Header("Authentication Inputs")]
     public TMP_InputField emailInputField;
     public TMP_InputField passwordInputField;
+    public TMP_InputField displayNameInputField;
     public Button connectAndStartGameButton;
     public Button registerButton;
     public TextMeshProUGUI feedbackText;
@@ -22,6 +23,22 @@ public class FirebaseEmailAuthentication : MonoBehaviour
     [Header("Game Configuration")]
 
     private FirebaseAuth auth;
+
+    public static FirebaseEmailAuthentication instance;
+
+    /// <summary>
+    /// Initialise l'instance unique de FirebaseEmailAuthentication.
+    /// </summary>
+    private void Awake()
+    {
+        if (instance != null)
+        {
+            Debug.LogWarning("Il y a plus d'une instance FirebaseEmailAuthentication dans la scène");
+            return;
+        }
+
+        instance = this;
+    }
 
     private void Start()
     {
@@ -80,8 +97,20 @@ public class FirebaseEmailAuthentication : MonoBehaviour
 
             if (user != null)
             {
-                ShowFeedback($"Connexion reussie : {user.Email}, {user.UserId}", Color.black);
+                ShowFeedback($"Connexion reussie : {user.Email}, {user.UserId}, {displayNameInputField}", Color.black);
+
+                // Initialisation DataOrchestrator si besoin
+                if (DataOrchestrator.instance == null)
+                {
+                    GameObject orchestrator = new GameObject("DataOrchestrator");
+                    orchestrator.AddComponent<DataOrchestrator>();
+                }
+
+                // Chargement des données
+                await DataOrchestrator.instance.LoadData();
+
                 //SceneManager.LoadScene(levelToLoad); // Charger la scène de jeu
+                
             }
         }
         catch (FirebaseException ex)
@@ -149,7 +178,10 @@ public class FirebaseEmailAuthentication : MonoBehaviour
 
             if (user != null)
             {
+
                 ShowFeedback($"Connexion reussie : {user.Email}, {user.UserId}", Color.black);
+                // Charger les données après authentification
+                await DataOrchestrator.instance.LoadData();
                 //SceneManager.LoadScene(levelToLoad); // Charger la scène de jeu
             }
             else
@@ -164,6 +196,8 @@ public class FirebaseEmailAuthentication : MonoBehaviour
                 if (user != null)
                 {
                     ShowFeedback($"Compte cree ! ID : {user.Email}, {user.UserId}", Color.black);
+                    // Sauvegarder les données locales pour un nouveau compte
+                    await DataOrchestrator.instance.SaveData();
                     //SceneManager.LoadScene(levelToLoad); // Charger la scène de jeu
                 }
                 else
@@ -174,7 +208,8 @@ public class FirebaseEmailAuthentication : MonoBehaviour
         }
         catch (FirebaseException ex)
         {
-            ShowFeedback($"Erreur : {ex.Message}", Color.red);
+            HandleAuthenticationError(ex);
+            //ShowFeedback($"Erreur : {ex.Message}", Color.red);
         }
         finally
         {
@@ -182,6 +217,41 @@ public class FirebaseEmailAuthentication : MonoBehaviour
         }
     }
 
+    private async void HandleAuthenticationError(FirebaseException ex)
+    {
+        string message = "Erreur inconnue";
+
+        Debug.LogError($"HandleAuthenticationError appelé avec : {ex.ErrorCode} - {ex.Message}"); // Vérification
+
+        switch ((AuthError)ex.ErrorCode)
+        {
+            case AuthError.MissingEmail:
+                message = "L'email est requis.";
+                break;
+            case AuthError.WrongPassword:
+                message = "Mot de passe incorrect.";
+                break;
+            case AuthError.UserNotFound:
+                message = "Aucun compte trouvé avec cet email.";
+                break;
+            case AuthError.EmailAlreadyInUse:
+                message = "Cet email est déjà utilisé.";
+                break;
+            case AuthError.InvalidEmail:
+                message = "Email invalide.";
+                break;
+            default:
+                message = ex.Message;
+                break;
+        }
+
+        ShowFeedback($"Erreur : {message}", Color.red);
+        feedbackText.gameObject.SetActive(true);
+
+        // Attendre une seconde pour s'assurer que le message est affiché
+        await Task.Delay(1000);
+
+    }
 
     /// <summary>
     /// Active ou désactive le bouton de connexion.

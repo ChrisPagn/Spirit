@@ -82,6 +82,7 @@ public class LoadSpecificScene : MonoBehaviour
             // Sauvegarde des données
             DataOrchestrator.instance.SaveData();
             Debug.LogWarning("Données sauvegardées au passage de niveau");
+            
         }
 
         // Vérifiez si fadeSysteme est initialisé

@@ -25,17 +25,17 @@ public class DataOrchestrator : MonoBehaviour
             instance = this;
             DontDestroyOnLoad(gameObject);
             Debug.Log("DataOrchestrator initialisé.");
+        
+            // Initialisation des gestionnaires de sauvegarde
+            _firebaseManager = FindObjectOfType<LoadAndSaveDataFirebase>();
+            _localManager = FindObjectOfType<LoadAndSaveData>();
+            Debug.Log("DataOrchestrator initialized");
         }
         else
         {
             Destroy(gameObject);
             return;
         }
-
-        // Initialisation des gestionnaires de sauvegarde
-        _firebaseManager = FindObjectOfType<LoadAndSaveDataFirebase>();
-        _localManager = FindObjectOfType<LoadAndSaveData>();
-
         if (_firebaseManager == null || _localManager == null)
         {
             Debug.LogError("Erreur : LoadAndSaveDataFirebase ou LoadAndSaveData n'ont pas été trouvés dans la scène !");
@@ -112,6 +112,14 @@ public class DataOrchestrator : MonoBehaviour
 
             // Mise à jour du niveau débloqué
             CurrentSceneManager.instance.levelToUnlock = saveData.LevelReached;
+
+            // Mise à jour du displayName si disponible
+            if (!string.IsNullOrEmpty(saveData.DisplayName) &&
+                FirebaseEmailAuthentication.instance != null &&
+                FirebaseEmailAuthentication.instance.displayNameInputField != null)
+            {
+                FirebaseEmailAuthentication.instance.displayNameInputField.text = saveData.DisplayName;
+            }
         }
     }
 }

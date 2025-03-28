@@ -50,6 +50,7 @@ public class LoadAndSaveData : MonoBehaviour
         // Crée un objet SaveData contenant les données à sauvegarder.
         var saveData = new SaveData
         {
+            DisplayName = FirebaseEmailAuthentication.instance.displayNameInputField.text,
             CoinsCount = Inventory.instance.coinsCount,
             LevelReached = CurrentSceneManager.instance.levelToUnlock,
             InventoryItems = Inventory.instance.contentItems.ConvertAll(item => item.id),
