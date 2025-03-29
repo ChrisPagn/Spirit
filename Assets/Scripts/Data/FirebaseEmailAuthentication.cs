@@ -256,7 +256,7 @@ public class FirebaseEmailAuthentication : MonoBehaviour
         ShowFeedback($"Erreur : {message}", Color.red);
         feedbackText.gameObject.SetActive(true);
 
-        // Attendre une seconde pour s'assurer que le message est affiché
+        // Attendre 3 secondes pour s'assurer que le message est affiché
         await Task.Delay(3000);
     }
 
