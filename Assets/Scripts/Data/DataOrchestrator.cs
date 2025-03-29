@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 
 /// <summary>
-/// Orchestrateur de gestion des données du jeu. 
+/// Orchestrateur de gestion des données du jeu.
 /// Gère la sauvegarde et le chargement des données en local et sur Firebase.
 /// </summary>
 public class DataOrchestrator : MonoBehaviour
@@ -18,6 +18,9 @@ public class DataOrchestrator : MonoBehaviour
     private LoadAndSaveDataFirebase _firebaseManager;
     private LoadAndSaveData _localManager;
 
+    /// <summary>
+    /// Initialise l'instance unique du DataOrchestrator et les gestionnaires de sauvegarde.
+    /// </summary>
     private void Awake()
     {
         if (instance == null)
@@ -25,20 +28,19 @@ public class DataOrchestrator : MonoBehaviour
             instance = this;
             DontDestroyOnLoad(gameObject);
             Debug.Log("DataOrchestrator initialisé.");
-        
+
             // Initialisation des gestionnaires de sauvegarde
             _firebaseManager = FindObjectOfType<LoadAndSaveDataFirebase>();
             _localManager = FindObjectOfType<LoadAndSaveData>();
-            Debug.Log("DataOrchestrator initialized");
+
+            if (_firebaseManager == null || _localManager == null)
+            {
+                Debug.LogError("Erreur : LoadAndSaveDataFirebase ou LoadAndSaveData n'ont pas été trouvés dans la scène !");
+            }
         }
         else
         {
             Destroy(gameObject);
-            return;
-        }
-        if (_firebaseManager == null || _localManager == null)
-        {
-            Debug.LogError("Erreur : LoadAndSaveDataFirebase ou LoadAndSaveData n'ont pas été trouvés dans la scène !");
         }
     }
 
@@ -50,6 +52,8 @@ public class DataOrchestrator : MonoBehaviour
         // Création de l'objet SaveData avant de l'envoyer à Firebase
         var saveData = new SaveData
         {
+            UserId = FirebaseEmailAuthentication.instance.idUser,
+            DisplayName = FirebaseEmailAuthentication.instance.displayNameInputField.text,
             CoinsCount = Inventory.instance.coinsCount,
             LevelReached = CurrentSceneManager.instance.levelToUnlock,
             InventoryItems = Inventory.instance.contentItems.ConvertAll(item => item.id),
@@ -57,8 +61,11 @@ public class DataOrchestrator : MonoBehaviour
             LastModified = DateTime.UtcNow
         };
 
-        _localManager.SaveDataToLocal(); // Sauvegarde locale
-        await _firebaseManager.SaveDataToFirebase(saveData); // Sauvegarde en ligne
+        // Sauvegarde des données localement
+        _localManager.SaveDataToLocal();
+
+        // Sauvegarde des données sur Firebase
+        await _firebaseManager.SaveDataToFirebase(saveData);
     }
 
     /// <summary>
@@ -66,10 +73,17 @@ public class DataOrchestrator : MonoBehaviour
     /// </summary>
     public async Task LoadData()
     {
-        SaveData localData = await Task.Run(() => _localManager.LoadData()); // Chargement des données locales
-        SaveData firebaseData = await _firebaseManager.LoadDataFromFirebaseAsync(); // Chargement des données Firebase
-        SaveData finalData = MergeSaveData(localData, firebaseData); // Fusion des données
-        ApplyData(finalData); // Application des données
+        // Chargement des données locales
+        SaveData localData = await Task.Run(() => _localManager.LoadData());
+
+        // Chargement des données Firebase
+        SaveData firebaseData = await _firebaseManager.LoadDataFromFirebaseAsync();
+
+        // Fusion des données pour obtenir la version la plus récente
+        SaveData finalData = MergeSaveData(localData, firebaseData);
+
+        // Application des données chargées
+        ApplyData(finalData);
     }
 
     /// <summary>
@@ -80,8 +94,13 @@ public class DataOrchestrator : MonoBehaviour
     /// <returns>Les données les plus récentes entre localData et firebaseData.</returns>
     private SaveData MergeSaveData(SaveData localData, SaveData firebaseData)
     {
+        // Si les données locales sont nulles, retourner les données Firebase
         if (localData == null) return firebaseData;
+
+        // Si les données Firebase sont nulles, retourner les données locales
         if (firebaseData == null) return localData;
+
+        // Retourner les données les plus récentes
         return (firebaseData.LastModified > localData.LastModified) ? firebaseData : localData;
     }
 

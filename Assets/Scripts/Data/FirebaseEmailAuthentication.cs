@@ -6,8 +6,14 @@ using TMPro;
 using UnityEngine.SceneManagement;
 using Firebase;
 
+/// <summary>
+/// Classe responsable de la gestion de l'authentification par email via Firebase depuis Unity.
+/// </summary>
 public class FirebaseEmailAuthentication : MonoBehaviour
 {
+    //L'attribut [Header("Game Configuration")] est utilisé dans Unity pour organiser l'inspecteur
+    //de l'éditeur. Il ajoute une section intitulée "Game Configuration" dans l'inspecteur, ce qui
+    //permet de regrouper visuellement les variables qui suivent cet attribut
     [Header("Authentication Inputs")]
     public TMP_InputField emailInputField;
     public TMP_InputField passwordInputField;
@@ -15,15 +21,19 @@ public class FirebaseEmailAuthentication : MonoBehaviour
     public Button connectAndStartGameButton;
     public Button registerButton;
     public TextMeshProUGUI feedbackText;
-    /// <summary>
-    /// Nom de la scène à charger lorsque le jeu commence.
-    /// </summary>
     public string levelToLoad;
+    public string idUser;
 
+    //L'attribut [Header("Authentication Inputs")] fonctionne de manière similaire à
+    //[Header("Game Configuration")]. Il crée une section intitulée
+    //"Authentication Inputs" dans l'inspecteur Unity
     [Header("Game Configuration")]
 
     private FirebaseAuth auth;
 
+    /// <summary>
+    /// Instance unique de la classe FirebaseEmailAuthentication.
+    /// </summary>
     public static FirebaseEmailAuthentication instance;
 
     /// <summary>
@@ -40,6 +50,9 @@ public class FirebaseEmailAuthentication : MonoBehaviour
         instance = this;
     }
 
+    /// <summary>
+    /// Initialise les composants et les écouteurs d'événements au démarrage.
+    /// </summary>
     private void Start()
     {
         auth = FirebaseAuth.DefaultInstance;
@@ -62,7 +75,6 @@ public class FirebaseEmailAuthentication : MonoBehaviour
             Debug.LogError("Register Button is missing!");
         }
     }
-
 
     /// <summary>
     /// Tente de connecter un utilisateur à Firebase avec email et mot de passe.
@@ -97,20 +109,12 @@ public class FirebaseEmailAuthentication : MonoBehaviour
 
             if (user != null)
             {
-                ShowFeedback($"Connexion reussie : {user.Email}, {user.UserId}, {displayNameInputField}", Color.black);
-
-                // Initialisation DataOrchestrator si besoin
-                if (DataOrchestrator.instance == null)
-                {
-                    GameObject orchestrator = new GameObject("DataOrchestrator");
-                    orchestrator.AddComponent<DataOrchestrator>();
-                }
+                ShowFeedback($"Connexion reussie : {user.Email}, {user.UserId}, {displayNameInputField.text}", Color.black);
 
                 // Chargement des données
                 await DataOrchestrator.instance.LoadData();
 
-                //SceneManager.LoadScene(levelToLoad); // Charger la scène de jeu
-                
+                SceneManager.LoadScene(levelToLoad); // Charger la scène de jeu
             }
         }
         catch (FirebaseException ex)
@@ -149,6 +153,9 @@ public class FirebaseEmailAuthentication : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Gère l'authentification de l'utilisateur, soit en se connectant, soit en créant un nouveau compte.
+    /// </summary>
     public async void HandleAuthentication()
     {
         if (string.IsNullOrEmpty(emailInputField.text) || string.IsNullOrEmpty(passwordInputField.text))
@@ -178,11 +185,10 @@ public class FirebaseEmailAuthentication : MonoBehaviour
 
             if (user != null)
             {
-
                 ShowFeedback($"Connexion reussie : {user.Email}, {user.UserId}", Color.black);
                 // Charger les données après authentification
                 await DataOrchestrator.instance.LoadData();
-                //SceneManager.LoadScene(levelToLoad); // Charger la scène de jeu
+                SceneManager.LoadScene(levelToLoad); // Charger la scène de jeu
             }
             else
             {
@@ -198,7 +204,7 @@ public class FirebaseEmailAuthentication : MonoBehaviour
                     ShowFeedback($"Compte cree ! ID : {user.Email}, {user.UserId}", Color.black);
                     // Sauvegarder les données locales pour un nouveau compte
                     await DataOrchestrator.instance.SaveData();
-                    //SceneManager.LoadScene(levelToLoad); // Charger la scène de jeu
+                    SceneManager.LoadScene(levelToLoad); // Charger la scène de jeu
                 }
                 else
                 {
@@ -209,7 +215,6 @@ public class FirebaseEmailAuthentication : MonoBehaviour
         catch (FirebaseException ex)
         {
             HandleAuthenticationError(ex);
-            //ShowFeedback($"Erreur : {ex.Message}", Color.red);
         }
         finally
         {
@@ -217,6 +222,9 @@ public class FirebaseEmailAuthentication : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Gère les erreurs d'authentification et affiche un message approprié à l'utilisateur.
+    /// </summary>
     private async void HandleAuthenticationError(FirebaseException ex)
     {
         string message = "Erreur inconnue";
@@ -249,8 +257,7 @@ public class FirebaseEmailAuthentication : MonoBehaviour
         feedbackText.gameObject.SetActive(true);
 
         // Attendre une seconde pour s'assurer que le message est affiché
-        await Task.Delay(1000);
-
+        await Task.Delay(3000);
     }
 
     /// <summary>

@@ -47,36 +47,30 @@ public class LoadAndSaveData : MonoBehaviour
     /// </summary>
     public void SaveDataToLocal()
     {
-        // Crée un objet SaveData contenant les données à sauvegarder.
         var saveData = new SaveData
         {
+            UserId = FirebaseEmailAuthentication.instance.idUser, // Ajoutez l'ID utilisateur
             DisplayName = FirebaseEmailAuthentication.instance.displayNameInputField.text,
             CoinsCount = Inventory.instance.coinsCount,
             LevelReached = CurrentSceneManager.instance.levelToUnlock,
             InventoryItems = Inventory.instance.contentItems.ConvertAll(item => item.id),
             InventoryItemsName = Inventory.instance.contentItems.ConvertAll(item => item.name),
-            LastModified = DateTime.UtcNow // Mettre à jour la date de modification
+            LastModified = DateTime.UtcNow
         };
 
         try
         {
-            // Convertit les données en JSON.
             string json = JsonConvert.SerializeObject(saveData);
-
-            // Chiffre le JSON.
             string encryptedJson = EncryptString(json, encryptionKey);
-
-            // Écrit le JSON chiffré dans le fichier.
             File.WriteAllText(filePath, encryptedJson);
-
             Debug.Log("Données sauvegardées localement avec succès !");
         }
         catch (Exception ex)
         {
-            // Affiche une erreur si la sauvegarde échoue.
             Debug.LogError($"Erreur lors de la sauvegarde des données : {ex.Message}");
         }
     }
+
 
     /// <summary>
     /// Charge les données sauvegardées à partir du fichier local.
@@ -88,13 +82,20 @@ public class LoadAndSaveData : MonoBehaviour
         {
             try
             {
-                // Lit et déchiffre les données locales
                 string encryptedJson = File.ReadAllText(filePath);
                 string json = DecryptString(encryptedJson, encryptionKey);
                 var saveData = JsonConvert.DeserializeObject<SaveData>(json);
 
-                Debug.Log("Données locales chargées avec succès !");
-                return saveData;
+                // Vérifiez que l'ID utilisateur correspond à celui de l'utilisateur actuel
+                if (saveData.UserId == FirebaseEmailAuthentication.instance.idUser)
+                {
+                    Debug.Log("Données locales chargées avec succès !");
+                    return saveData;
+                }
+                else
+                {
+                    Debug.LogWarning("L'ID utilisateur ne correspond pas. Les données locales ne seront pas chargées.");
+                }
             }
             catch (Exception ex)
             {
@@ -230,35 +231,37 @@ public class LoadAndSaveData : MonoBehaviour
 
 
 
-//*********************
-//Aide mémoire
-//*********************
+#region Aide-mémoire
 
-// PlayerPrefs sauvegarde les données dans un fichier de registre sur Windows ou un fichier .plist sur macOS
-// Ces fichiers sont situés dans un répertoire spécifique à l'application sur le disque de l'utilisateur
+/*
+*********************
+Aide mémoire
+*********************
 
-//        Fonctionnement de PlayerPrefs:
-//        Stockage Local : PlayerPrefs stocke les données en local sur le disque de l'utilisateur.
-//                          Sur Windows, les données sont stockées dans le registre,
-//                              cmd :Windows + r ==>> taper " regedit "
-//                          tandis que sur macOS, elles sont stockées dans un fichier .plist.
+PlayerPrefs sauvegarde les données dans un fichier de registre sur Windows ou un fichier .plist sur macOS.
+Ces fichiers sont situés dans un répertoire spécifique à l'application sur le disque de l'utilisateur.
 
-//        Persistance: Les données sauvegardées avec PlayerPrefs persistent entre les sessions de jeu,
-//                      ce qui signifie qu'elles ne sont pas perdues lorsque le jeu est fermé.
+Fonctionnement de PlayerPrefs:
+- Stockage Local : PlayerPrefs stocke les données en local sur le disque de l'utilisateur.
+                  Sur Windows, les données sont stockées dans le registre,
+                  (cmd :Windows + r ==>> taper " regedit ").
+                  Tandis que sur macOS, elles sont stockées dans un fichier .plist.
+- Persistance: Les données sauvegardées avec PlayerPrefs persistent entre les sessions de jeu,
+               ce qui signifie qu'elles ne sont pas perdues lorsque le jeu est fermé.
+- Types de Données: PlayerPrefs peut stocker des types de données simples comme des entiers,
+                    des flottants et des chaînes de caractères.
+- Limites : PlayerPrefs n'est pas conçu pour stocker de grandes quantités de données ou des types de données complexes.
+            Pour des besoins plus avancés, il est recommandé d'utiliser des solutions de sérialisation ou des bases de données.
 
-//        Types de Données: PlayerPrefs peut stocker des types de données simples comme des entiers,
-//                          des flottants et des chaînes de caractères.
+**************************************************************************************************
+En cours de réflexion ==>> Solution à prévoir pour optimiser les sauvegardes des données en local
+**************************************************************************************************
 
-//        Limites : PlayerPrefs n'est pas conçu pour stocker de grandes quantités de données ou des types de données complexes.
-//                  Pour des besoins plus avancés, il est recommandé d'utiliser des solutions de sérialisation ou des bases de données.
+1. Un fichier JSON crypté. Utiliser des bibliothèques comme Newtonsoft.Json pour la gestion JSON et System.Security.Cryptography
+   pour le cryptage en C#.
 
+2. SQLite : Une base de données légère qui peut être intégrée directement dans votre application. Elle est idéale pour des
+   données relationnelles et offre des fonctionnalités de sécurité comme le cryptage.
+*/
 
-//**************************************************************************************************
-//En cours de réflexion ==>> Solution a prévoir pour optimiser les sauvegardes des données en local
-//**************************************************************************************************
-
-// 1. un fichier JSON crypté. Utiliser des bibliothèques comme Newtonsoft.Json pour la gestion JSON et System.Security.Cryptography
-// pour le cryptage en C#.
-
-// 2. SQLite : Une base de données légère qui peut être intégrée directement dans votre application. Elle est idéale pour des
-// données relationnelles et offre des fonctionnalités de sécurité comme le cryptage.
+#endregion

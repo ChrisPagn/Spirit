@@ -64,7 +64,7 @@ public class ShopManager : MonoBehaviour
         }
         catch (Exception)
         {
-            Debug.LogError("probleme avec les ref");
+            Debug.LogError("probleme avec les reference du shop");
         }
     
     }
