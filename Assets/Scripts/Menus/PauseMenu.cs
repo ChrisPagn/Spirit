@@ -8,7 +8,7 @@ using UnityEngine.SceneManagement;
 public class PauseMenu : MonoBehaviour
 {
     public static bool gameIsPaused = false; // Indique si le jeu est en pause
-    public GameObject pauseMenuUI; // Référence à l'interface utilisateur du menu pause
+    public PauseMenuOPj pauseMenuUI; // Référence à l'interface utilisateur du menu pause
     public GameObject settingsMenuUI;
 
     /// <summary>
@@ -36,8 +36,14 @@ public class PauseMenu : MonoBehaviour
     {
         // Empêche les mouvements du joueur
         PlayerMovement.instance.enabled = false;
+
+        if(pauseMenuUI == null)
+        {
+            pauseMenuUI = FindObjectOfType<PauseMenuOPj>();
+        }
+
         // Active l'interface utilisateur du menu pause
-        pauseMenuUI.SetActive(true);
+        pauseMenuUI.pauseTb.SetActive(true);
         // Arrête le temps dans le jeu
         Time.timeScale = 0;
         // Change l'état du jeu à "en pause"
@@ -51,8 +57,14 @@ public class PauseMenu : MonoBehaviour
     {
         // Active les mouvements du joueur
         PlayerMovement.instance.enabled = true;
+
+        if (pauseMenuUI == null)
+        {
+            pauseMenuUI = FindObjectOfType<PauseMenuOPj>();
+        }
+
         // Désactive l'interface utilisateur du menu pause
-        pauseMenuUI.SetActive(false);
+        pauseMenuUI.pauseTb.SetActive(false);
         // Redémarre le temps dans le jeu
         Time.timeScale = 1;
         // Change l'état du jeu à "en cours"

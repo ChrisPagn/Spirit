@@ -24,6 +24,9 @@ public class FirebaseEmailAuthentication : MonoBehaviour
     public string levelToLoad;
     public string idUser;
 
+    //Si débug == true, alors j'utilise mon compte pour tester mes méthodes.
+    public bool DebugMode = false;
+
     //L'attribut [Header("Authentication Inputs")] fonctionne de manière similaire à
     //[Header("Game Configuration")]. Il crée une section intitulée
     //"Authentication Inputs" dans l'inspecteur Unity
@@ -111,10 +114,11 @@ public class FirebaseEmailAuthentication : MonoBehaviour
             {
                 ShowFeedback($"Connexion reussie : {user.Email}, {user.UserId}, {displayNameInputField.text}", Color.black);
 
+
+                //SceneManager.LoadScene(levelToLoad); // Charger la scène de jeu
+
                 // Chargement des données
                 await DataOrchestrator.instance.LoadData();
-
-                SceneManager.LoadScene(levelToLoad); // Charger la scène de jeu
             }
         }
         catch (FirebaseException ex)
@@ -177,16 +181,33 @@ public class FirebaseEmailAuthentication : MonoBehaviour
                 Debug.Log("Utilisateur anonyme supprimé.");
             }
 
+            FirebaseUser user;
+
+            if (DebugMode)
+            {
+                string email = "CHRISTOPHER.PAGNOTTA@GMAIL.COM";
+                string pass = "15f05w84a";
+
+                user = (await auth.SignInWithEmailAndPasswordAsync(
+                email,//mail
+                pass//passwordFW
+                )).User;
+            }
+            else
+            {
             // Tenter de se connecter avec email et mot de passe
-            FirebaseUser user = (await auth.SignInWithEmailAndPasswordAsync(
+                 user = (await auth.SignInWithEmailAndPasswordAsync(
                 emailInputField.text,
                 passwordInputField.text
             )).User;
+            }
+
 
             if (user != null)
             {
                 ShowFeedback($"Connexion reussie : {user.Email}, {user.UserId}", Color.black);
                 // Charger les données après authentification
+                var test = DataOrchestrator.instance;
                 await DataOrchestrator.instance.LoadData();
                 SceneManager.LoadScene(levelToLoad); // Charger la scène de jeu
             }

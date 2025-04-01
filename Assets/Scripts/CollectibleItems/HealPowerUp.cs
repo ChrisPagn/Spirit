@@ -33,10 +33,10 @@ public class HealPowerUp : MonoBehaviour
             audioSource.PlayOneShot(sound);
 
             Debug.LogWarning("Passage dans HealPowerUp");
-            if (PlayerHealth.instance.currentHealth < PlayerHealth.instance.maxHealth)
+            if (PlayerHealth.playerhealth.currentHealth < PlayerHealth.playerhealth.maxHealth)
             {
                 // Rendre de la vie au joueur
-                PlayerHealth.instance.HealPlayer(healthPoints);
+                PlayerHealth.playerhealth.HealPlayer(healthPoints);
                 // Détruit le power-up après la fin du son
                 Destroy(gameObject, sound.length);
             }

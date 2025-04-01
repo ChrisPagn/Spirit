@@ -47,7 +47,7 @@ public class GameOverManager : MonoBehaviour
         // Recharge la scène
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
         // Replace le joueur au point de réapparition
-        PlayerHealth.instance.Respawn();
+        PlayerHealth.playerhealth.Respawn();
         // Réactive les mouvements du joueur et restaure sa vie
         gameOverUI.SetActive(false);
     }

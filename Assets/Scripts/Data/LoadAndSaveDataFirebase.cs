@@ -41,39 +41,43 @@ public class LoadAndSaveDataFirebase : MonoBehaviour
         if (instance == null)
         {
             instance = this;
-            DontDestroyOnLoad(gameObject);
+            //DontDestroyOnLoad(gameObject);
         }
         else
         {
-            Destroy(gameObject);
+            //Destroy(gameObject);
             return;
         }
 
-        FirebaseApp.CheckAndFixDependenciesAsync().ContinueWith(task =>
-        {
-            if (task.Result == DependencyStatus.Available)
-            {
-                FirebaseApp app = FirebaseApp.DefaultInstance;
-                dbReference = FirebaseFirestore.DefaultInstance.Collection("users");
-                auth = FirebaseAuth.DefaultInstance;
 
-                // Ne pas authentifier anonymement ici
-                user = auth.CurrentUser;
-                if (user != null)
-                {
-                    Debug.Log("Connecté à Firebase avec l'ID: " + user.UserId);
-                }
-                else
-                {
-                    Debug.LogWarning("Aucun utilisateur connecté.");
-                }
+    }
+    public async Task Init()
+    {
+        var dependencyTask = FirebaseApp.CheckAndFixDependenciesAsync();
+        var dependencyStatus = await dependencyTask;
+
+        if (dependencyStatus == DependencyStatus.Available)
+        {
+            FirebaseApp app = FirebaseApp.DefaultInstance;
+            dbReference = FirebaseFirestore.DefaultInstance.Collection("users");
+            auth = FirebaseAuth.DefaultInstance;
+
+            user = auth.CurrentUser;
+            if (user != null)
+            {
+                Debug.Log("Connecté à Firebase avec l'ID: " + user.UserId);
             }
             else
             {
-                Debug.LogError("Firebase non disponible : " + task.Result);
+                Debug.LogWarning("Aucun utilisateur connecté.");
             }
-        });
+        }
+        else
+        {
+            Debug.LogError("Firebase non disponible : " + dependencyStatus);
+        }
     }
+
 
     /// <summary>
     /// Sauvegarde les données de l'utilisateur sur Firestore.
@@ -137,14 +141,14 @@ public class LoadAndSaveDataFirebase : MonoBehaviour
                 var docData = snapshot.ToDictionary();
 
                 // Création d'un objet SaveData à partir des données récupérées
-                var saveData = new SaveData
-                {
-                    DisplayName = Convert.ToString(docData["DisplayName"]),
-                    CoinsCount = Convert.ToInt32(docData["CoinsCount"]),
-                    LevelReached = Convert.ToInt32(docData["LevelReached"]),
-                    LastModified = ((Timestamp)docData["LastModified"]).ToDateTime()
-                };
+                var saveData = new SaveData(
+                    Convert.ToString(docData["DisplayName"]),
+                    Convert.ToInt32(docData["CoinsCount"]),
+                    Convert.ToInt32(docData["LevelReached"]),
+                    ((Timestamp)docData["LastModified"]).ToDateTime()
+                );
 
+          
                 // Conversion des InventoryItems
                 if (docData.ContainsKey("InventoryItems") && docData["InventoryItems"] is IEnumerable<object> items)
                 {

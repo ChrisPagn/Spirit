@@ -27,12 +27,12 @@ public class LoadAndSaveData : MonoBehaviour
         // Vérifie si une instance existe déjà, sinon crée une nouvelle instance unique (Singleton)
         if (instance != null && instance != this)
         {
-            Destroy(gameObject); // Détruit l'objet en double pour éviter les conflits
+          //  Destroy(gameObject); // Détruit l'objet en double pour éviter les conflits
             return;
         }
 
         instance = this; // Définit l'instance unique du script
-        DontDestroyOnLoad(gameObject); // Conserve l'objet entre les scènes
+        //DontDestroyOnLoad(gameObject); // Conserve l'objet entre les scènes
 
         // Définit le chemin du fichier de sauvegarde qui stocke les données du joueur
         filePath = Path.Combine(Application.persistentDataPath, "saveData.json");
@@ -47,17 +47,19 @@ public class LoadAndSaveData : MonoBehaviour
     /// </summary>
     public void SaveDataToLocal()
     {
-        var saveData = new SaveData
-        {
-            UserId = FirebaseEmailAuthentication.instance.idUser, // Ajoutez l'ID utilisateur
-            DisplayName = FirebaseEmailAuthentication.instance.displayNameInputField.text,
-            CoinsCount = Inventory.instance.coinsCount,
-            LevelReached = CurrentSceneManager.instance.levelToUnlock,
-            InventoryItems = Inventory.instance.contentItems.ConvertAll(item => item.id),
-            InventoryItemsName = Inventory.instance.contentItems.ConvertAll(item => item.name),
-            LastModified = DateTime.UtcNow
-        };
+        var saveData = new SaveData(
+            FirebaseEmailAuthentication.instance.idUser, // Ajoutez l'ID utilisateur
+            FirebaseEmailAuthentication.instance.displayNameInputField.text,
+            Inventory.instance.coinsCount,
+            CurrentSceneManager.instance.levelToUnlock,
+            Inventory.instance.contentItems.ConvertAll(item => item.id),
+            Inventory.instance.contentItems.ConvertAll(item => item.name),
+            DateTime.UtcNow,
+            Inventory.instance.lastLevelPlayed == null ? "level01" : Inventory.instance.lastLevelPlayed
 
+            );
+
+ 
         try
         {
             string json = JsonConvert.SerializeObject(saveData);

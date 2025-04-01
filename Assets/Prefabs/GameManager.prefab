@@ -15,6 +15,8 @@ GameObject:
   - component: {fileID: 1573877392}
   - component: {fileID: 4486263411949041502}
   - component: {fileID: 4486263411949041505}
+  - component: {fileID: 4486263411949041503}
+  - component: {fileID: 4486263411949041507}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -103,6 +105,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a466ae946506fdb4dbbd89d64bd82430, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  shopUIReference: {fileID: 0}
   npcNameText: {fileID: 0}
   animator: {fileID: 0}
   sellButtonPrefab: {fileID: 3818153492384467205, guid: 35ba7076bd3bd2b4a91dfd06f5ebfa8e, type: 3}
@@ -122,3 +125,27 @@ MonoBehaviour:
   allItems:
   - {fileID: 11400000, guid: 19d7d668ab8fa644881624b12cf44eb9, type: 2}
   - {fileID: 11400000, guid: 72835f018786043479011fafb5513a34, type: 2}
+--- !u!114 &4486263411949041503
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4486263411384287754}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14073ac08f2e6fb4285015e16d7bb41f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &4486263411949041507
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4486263411384287754}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0c651403547352746a091007a94df400, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

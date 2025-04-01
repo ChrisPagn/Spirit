@@ -46,7 +46,7 @@ public class PlayerHealth : MonoBehaviour
     /// <summary>
     /// Instance statique pour gérer l'accès global à PlayerHealth.
     /// </summary>
-    public static PlayerHealth instance;
+    public static PlayerHealth playerhealth;
 
     /// <summary>
     /// Source audio du joueur.
@@ -63,30 +63,37 @@ public class PlayerHealth : MonoBehaviour
     /// </summary>
     private void Awake()
     {
-        if (instance != null)
+        if (playerhealth == null)
         {
-            Debug.LogWarning("Il y a plus d'une instance PlayerHealth dans la scène");
-            return;
+            playerhealth = FindObjectOfType<PlayerHealth>();
+            InitHealth();
         }
-        instance = this;
+
     }
 
-    /// <summary>
-    /// Initialise les valeurs de santé et met à jour la barre de vie au démarrage du jeu.
-    /// </summary>
-    void Start()
+
+
+    ///// <summary>
+    ///// Initialise les valeurs de santé et met à jour la barre de vie au démarrage du jeu.
+    ///// </summary>
+    //void Start()
+    //{
+  
+    //    if (healthBar != null)
+    //    {
+    //        healthBar.SetMaxHealth(maxHealth);
+    //    }
+    //    else
+    //    {
+    //        Debug.LogError("La référence à la barre de vie (HealthBar) est manquante.");
+    //    }
+    //}
+
+    public void InitHealth()
     {
         currentHealth = maxHealth;
-        if (healthBar != null)
-        {
-            healthBar.SetMaxHealth(maxHealth);
-        }
-        else
-        {
-            Debug.LogError("La référence à la barre de vie (HealthBar) est manquante.");
-        }
+        healthBar.SetMaxHealth(maxHealth);
     }
-
     /// <summary>
     /// Vérifie les entrées utilisateur chaque frame, notamment pour tester la prise de dégâts.
     /// </summary>

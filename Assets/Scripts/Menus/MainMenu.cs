@@ -21,7 +21,7 @@ public class MainMenu : MonoBehaviour
     /// </summary>
     public void StartGameButton()
     {
-        SceneManager.LoadScene(levelToLoad);
+        GameManager.instance.OnLoadLevel(levelToLoad, null);
     }
 
     /// <summary>

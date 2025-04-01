@@ -8,6 +8,7 @@ using TMPro;
 /// </summary>
 public class Inventory : MonoBehaviour
 {
+    public string lastLevelPlayed;
     /// <summary>
     /// Nombre actuel de pièces dans l'inventaire.
     /// </summary>
@@ -16,7 +17,7 @@ public class Inventory : MonoBehaviour
     /// <summary>
     /// Texte standard (UnityEngine.UI) pour afficher le nombre de pièces dans l'interface utilisateur.
     /// </summary>
-    public Text coinsCountText;
+    public TextMeshProUGUI coinsCountText;
 
     /// <summary>
     /// Liste des objets contenus dans l'inventaire.
@@ -46,7 +47,7 @@ public class Inventory : MonoBehaviour
     /// <summary>
     /// Texte (TextMeshPro) pour afficher le nombre de pièces dans l'interface utilisateur.
     /// </summary>
-    public TMP_Text coinsText;
+    public TextMeshProUGUI coinsText;
 
     /// <summary>
     /// Référence aux effets du joueur pour appliquer les effets des objets consommés.
@@ -63,14 +64,11 @@ public class Inventory : MonoBehaviour
     /// </summary>
     private void Awake()
     {
-        if (instance != null)
+        if (instance == null)
         {
-            Debug.LogWarning("Il y a plus d'une instance de Inventory dans la scène!");
-            Destroy(gameObject);
-            return;
-        }
 
         instance = this;
+        }
     }
 
     /// <summary>
@@ -91,7 +89,7 @@ public class Inventory : MonoBehaviour
             return;
         }
         Item currentItem = contentItems[contentCurrentIndex];
-        PlayerHealth.instance.HealPlayer(currentItem.hpGiven);
+        PlayerHealth.playerhealth.HealPlayer(currentItem.hpGiven);
         playerEffects.AddSpeed(currentItem.speedGiven, currentItem.speedDuration);
         contentItems.Remove(currentItem);
         GetNextItem();

@@ -10,13 +10,12 @@ using UnityEngine;
 /// </summary>
 public class DataOrchestrator : MonoBehaviour
 {
+    public SaveData saveData;
     /// <summary>
     /// Instance unique du DataOrchestrator (Singleton).
     /// </summary>
     public static DataOrchestrator instance { get; private set; }
 
-    private LoadAndSaveDataFirebase _firebaseManager;
-    private LoadAndSaveData _localManager;
 
     /// <summary>
     /// Initialise l'instance unique du DataOrchestrator et les gestionnaires de sauvegarde.
@@ -26,21 +25,17 @@ public class DataOrchestrator : MonoBehaviour
         if (instance == null)
         {
             instance = this;
-            DontDestroyOnLoad(gameObject);
+            //DontDestroyOnLoad(gameObject);
             Debug.Log("DataOrchestrator initialisé.");
 
-            // Initialisation des gestionnaires de sauvegarde
-            _firebaseManager = FindObjectOfType<LoadAndSaveDataFirebase>();
-            _localManager = FindObjectOfType<LoadAndSaveData>();
+            //// Initialisation des gestionnaires de sauvegarde
+            //_firebaseManager = FindObjectOfType<LoadAndSaveDataFirebase>();
+            //_localManager = FindObjectOfType<LoadAndSaveData>();
 
-            if (_firebaseManager == null || _localManager == null)
-            {
-                Debug.LogError("Erreur : LoadAndSaveDataFirebase ou LoadAndSaveData n'ont pas été trouvés dans la scène !");
-            }
-        }
-        else
-        {
-            Destroy(gameObject);
+            //if (_firebaseManager == null || _localManager == null)
+            //{
+            //    Debug.LogError("Erreur : LoadAndSaveDataFirebase ou LoadAndSaveData n'ont pas été trouvés dans la scène !");
+            //}
         }
     }
 
@@ -50,22 +45,22 @@ public class DataOrchestrator : MonoBehaviour
     public async Task SaveData()
     {
         // Création de l'objet SaveData avant de l'envoyer à Firebase
-        var saveData = new SaveData
-        {
-            UserId = FirebaseEmailAuthentication.instance.idUser,
-            DisplayName = FirebaseEmailAuthentication.instance.displayNameInputField.text,
-            CoinsCount = Inventory.instance.coinsCount,
-            LevelReached = CurrentSceneManager.instance.levelToUnlock,
-            InventoryItems = Inventory.instance.contentItems.ConvertAll(item => item.id),
-            InventoryItemsName = Inventory.instance.contentItems.ConvertAll(item => item.name),
-            LastModified = DateTime.UtcNow
-        };
-
+        var saveData = new SaveData(
+          FirebaseEmailAuthentication.instance.idUser, // Ajoutez l'ID utilisateur
+          FirebaseEmailAuthentication.instance.displayNameInputField.text,
+          Inventory.instance.coinsCount,
+          CurrentSceneManager.instance.levelToUnlock,
+          Inventory.instance.contentItems.ConvertAll(item => item.id),
+          Inventory.instance.contentItems.ConvertAll(item => item.name),
+          DateTime.UtcNow,
+          Inventory.instance.lastLevelPlayed  == null ? "level01" : Inventory.instance.lastLevelPlayed
+          );
         // Sauvegarde des données localement
-        _localManager.SaveDataToLocal();
+        LoadAndSaveData.instance.SaveDataToLocal();
 
         // Sauvegarde des données sur Firebase
-        await _firebaseManager.SaveDataToFirebase(saveData);
+        await LoadAndSaveDataFirebase.instance.SaveDataToFirebase(saveData);
+        //await _firebaseManager.SaveDataToFirebase(saveData);
     }
 
     /// <summary>
@@ -73,18 +68,28 @@ public class DataOrchestrator : MonoBehaviour
     /// </summary>
     public async Task LoadData()
     {
+        // Attendre que Firebase soit bien initialisé
+        await LoadAndSaveDataFirebase.instance.Init();
+
         // Chargement des données locales
-        SaveData localData = await Task.Run(() => _localManager.LoadData());
+        SaveData localData = await Task.Run(() => LoadAndSaveData.instance.LoadData());
 
         // Chargement des données Firebase
-        SaveData firebaseData = await _firebaseManager.LoadDataFromFirebaseAsync();
+        SaveData firebaseData = await LoadAndSaveDataFirebase.instance.LoadDataFromFirebaseAsync();
+
+        Debug.Log(firebaseData.CoinsCount + " " + firebaseData.CoinsCount);
 
         // Fusion des données pour obtenir la version la plus récente
         SaveData finalData = MergeSaveData(localData, firebaseData);
 
-        // Application des données chargées
-        ApplyData(finalData);
+        Debug.Log(finalData.CoinsCount + " " + finalData.CoinsCount);
+
+        GameManager.instance.OnLoadLevel(finalData.LastLevelPlayed,finalData);
+
+        // Application des données chargées sur l'ui
+        //ApplyDataOnUI(finalData);
     }
+
 
     /// <summary>
     /// Fusionne les données locales et celles de Firebase en gardant la plus récente.
@@ -108,7 +113,7 @@ public class DataOrchestrator : MonoBehaviour
     /// Applique les données chargées dans les systèmes de jeu.
     /// </summary>
     /// <param name="saveData">Les données à appliquer.</param>
-    private void ApplyData(SaveData saveData)
+    public void ApplyDataOnUI(SaveData saveData)
     {
         if (saveData != null)
         {
